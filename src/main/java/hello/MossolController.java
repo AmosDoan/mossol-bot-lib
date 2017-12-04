@@ -71,8 +71,11 @@ public class MossolController {
            message.setType("text");
            replyRequest.setMessage(message);
 
-           httpConnection.post(REPLY_URI, writeJsonString(replyRequest));
-           return true;
+           if(httpConnection.post(REPLY_URI, writeJsonString(replyRequest))) {
+               return true;
+           } else {
+               return false;
+           }
        }
 
         System.out.println("====No reply====");

@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import java.net.URI;
 
@@ -38,8 +39,14 @@ public class HttpConnection {
             System.out.println("Entity : " + postRequest.getEntity());
 
             HttpResponse httpResponse = httpClient.execute(postRequest);
+
+            // http://egloos.zum.com/flutia/v/5507510
+            EntityUtils.consume(httpResponse.getEntity());
+
+
             System.out.println("LINE Platform Server Response : " + httpResponse);
         } catch(Exception e) {
+            System.out.println("LINE Platform Server Fail : " + e);
             return false;
         }
 
