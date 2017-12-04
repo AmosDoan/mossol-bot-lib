@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Version: 0.1.1
-Built-By: dohan.kim
-Implementation-Vendor-Id: org.springframework
-Created-By: IntelliJ IDEA
-Build-Jdk: 1.8.0_144
-Main-Class: ${start-class}
-

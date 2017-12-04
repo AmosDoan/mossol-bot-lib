@@ -57,28 +57,39 @@ public class MossolController {
 
     private boolean replyMessage(LineRequest request) {
        LineRequest.Event event =  request.getEvents().get(0);
-       String token = event.getReplyToken();
 
-        System.out.println("DEBUG : " + event.getMessage().getText() );
+        System.out.println("replyMessage" + event);
+        System.out.println("event.getType() " + event.getType());
 
-       if (event.getMessage().getText().equals("안녕?")) {
-           System.out.println("====send reply====");
-           LineReplyRequest replyRequest = new LineReplyRequest();
-           replyRequest.setReplyToken(token);
+        if (event.getType().equals("message")) {
+            System.out.println("DEBUG == message");
+            String token = event.getReplyToken();
 
-           LineReplyRequest.Message message = new LineReplyRequest.Message();
-           message.setText("Hi from Mossol!!!");
-           message.setType("text");
-           replyRequest.setMessage(message);
+            System.out.println("DEBUG : " + event.getMessage().getText() );
 
-           if(httpConnection.post(REPLY_URI, writeJsonString(replyRequest))) {
-               return true;
-           } else {
-               return false;
-           }
-       }
+            if (event.getMessage().getText().equals("안녕?")) {
+                System.out.println("====send reply====");
+                LineReplyRequest replyRequest = new LineReplyRequest();
+                replyRequest.setReplyToken(token);
 
-        System.out.println("====No reply====");
+                LineReplyRequest.Message message = new LineReplyRequest.Message();
+                message.setText("Hi from Mossol!!!");
+                message.setType("text");
+                replyRequest.setMessage(message);
+
+                if(httpConnection.post(REPLY_URI, writeJsonString(replyRequest))) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            System.out.println("====No reply====");
+       } else if (event.getType().equals("join")) {
+            String token =  event.getSource().getGroupId();
+            System.out.println("Join the group " + token);
+        }
+
        return false;
     }
 
@@ -91,6 +102,8 @@ public class MossolController {
     @RequestMapping(value = "/line", method = RequestMethod.POST)
     public LineResponse getLine(@RequestHeader(value = "X-Line-Signature") String signature,
                                 @RequestBody String request) {
+        System.out.println("[DEBUG] Request : " + request);
+
         LineRequest requestObj = readJsonString(request);
         LineResponse response = new LineResponse();
 
@@ -99,11 +112,15 @@ public class MossolController {
             return null;
         }
 
-        response.setResponse(requestObj.getEvents().toString());
+        try {
+            response.setResponse(requestObj.getEvents().toString());
 
-        System.out.println("header signature : " + signature);
-        System.out.println("SECRET: " + SECRET_KEY);
-        System.out.println("response : " + request);
+            System.out.println("header signature : " + signature);
+            System.out.println("SECRET: " + SECRET_KEY);
+            System.out.println("response : " + request);
+        } catch (Exception e) {
+            System.out.println("Debug : " + e);
+        }
 
         replyMessage(requestObj);
 

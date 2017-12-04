@@ -25,6 +25,7 @@ public class LineRequest {
     public static class Source {
         private String type;
         private String userId;
+        private String groupId;
     }
 
     @Data
