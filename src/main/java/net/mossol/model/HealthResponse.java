@@ -1,4 +1,4 @@
-package hello;
+package net.mossol.model;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
 @Data
-public class HelloGreeting {
+public class HealthResponse {
     private final long id;
     private final String content;
 }

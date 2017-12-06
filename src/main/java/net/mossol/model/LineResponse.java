@@ -1,4 +1,4 @@
-package hello;
+package net.mossol.model;
 
 import lombok.Data;
 

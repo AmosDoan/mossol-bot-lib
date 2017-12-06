@@ -1,4 +1,4 @@
-package hello;
+package net.mossol;
 
 
 import org.apache.http.HttpHeaders;
@@ -22,16 +22,17 @@ public class HttpConnection {
     public boolean post(String uriStr, String payload) {
 
         try {
-            System.out.println("payload : " + payload);
-
             URI uri = new URI(uriStr);
             HttpPost postRequest = new HttpPost(uri);
 
             String token = "Bearer " + ACCESS_TOKEN;
-            StringEntity entity = new StringEntity(payload, ContentType.APPLICATION_JSON);
-            postRequest.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             postRequest.addHeader("Authorization", token);
-            postRequest.setEntity(entity);
+
+            if (payload != null) {
+                StringEntity entity = new StringEntity(payload, ContentType.APPLICATION_JSON);
+                postRequest.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+                postRequest.setEntity(entity);
+            }
 
             System.out.println("Token : " + token);
             System.out.println("postRequest : " + postRequest.toString());
@@ -42,7 +43,6 @@ public class HttpConnection {
 
             // http://egloos.zum.com/flutia/v/5507510
             EntityUtils.consume(httpResponse.getEntity());
-
 
             System.out.println("LINE Platform Server Response : " + httpResponse);
         } catch(Exception e) {
