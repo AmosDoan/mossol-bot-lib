@@ -3,7 +3,6 @@ package net.mossol;
 import net.mossol.model.HealthResponse;
 import net.mossol.model.LineRequest;
 import net.mossol.model.LineResponse;
-import net.mossol.service.Impl.MessageHandlerImpl;
 import net.mossol.service.MessageHandler;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,8 @@ public class MossolController {
 
     private final AtomicLong counter = new AtomicLong();
 
-    private MessageHandler messageHandler = new MessageHandlerImpl();
+    @Autowired
+    private MessageHandler messageHandler;
 
     private boolean validateHeader(String requestBody) {
         try {

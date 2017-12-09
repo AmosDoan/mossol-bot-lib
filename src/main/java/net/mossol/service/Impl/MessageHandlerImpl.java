@@ -18,15 +18,11 @@ public class MessageHandlerImpl implements MessageHandler {
     private static final String LEAVE_URI = "https://api.line.me/v2/bot/group/%s/leave";
     private static final HttpConnection httpConnection = new HttpConnection();
 
-    //@Autowired
-    private LunchServiceHandler lunchServiceHandler = new LunchServiceHandlerImpl();
+    @Autowired
+    private LunchServiceHandler lunchServiceHandler;
 
     private boolean sendRequest(String uri, Object request) {
-        if(httpConnection.post(uri, MossolUtil.writeJsonString(request))) {
-            return true;
-        } else {
-            return false;
-        }
+        return httpConnection.post(uri, MossolUtil.writeJsonString(request));
     }
 
     @Override
