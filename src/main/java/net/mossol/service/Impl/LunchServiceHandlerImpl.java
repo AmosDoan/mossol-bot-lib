@@ -1,6 +1,8 @@
 package net.mossol.service.Impl;
 
 import net.mossol.service.LunchServiceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.Random;
  */
 @Service
 public class LunchServiceHandlerImpl implements LunchServiceHandler {
-
+    private final static Logger logger = LoggerFactory.getLogger(LunchServiceHandlerImpl.class);
     private final String menuFormat = "메뉴 리스트는 다음과 같아요 멍\n%s";
     private final String selectFormat = "멍멍 %s 안먹으면 가서 깨뭅니다";
     private List<String> lunchCandidate = new ArrayList<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비",
@@ -23,19 +25,19 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
 
     @Override
     public String getMenu() {
-        System.out.println("getMenu");
+        logger.debug("getMenu");
         String msg = String.format(menuFormat, String.join("\n", lunchCandidate));
-        System.out.println("DEBUG : " + msg);
+        logger.debug("DEBUG : {}", msg);
         return msg;
     }
 
     @Override
     public String selectMenu() {
-        System.out.println("selectMenu");
+        logger.debug("selectMenu");
         int idx = (random.nextInt() & Integer.MAX_VALUE)% lunchCandidate.size();
         String select = lunchCandidate.get(idx);
         String msg = String.format(selectFormat, select);
-        System.out.println("DEBUG : " + msg);
+        logger.debug("DEBUG : {}", msg);
         return msg;
     }
 }

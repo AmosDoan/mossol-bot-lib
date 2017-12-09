@@ -5,6 +5,8 @@ import net.mossol.model.LineRequest;
 import net.mossol.model.LineResponse;
 import net.mossol.service.MessageHandler;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @RestController
 public class MossolController {
+    private static final Logger logger = LoggerFactory.getLogger(MossolController.class);
     private static final String template = "Hello, %s!";
     private static final String SECRET_KEY = "49588e53b2c64f47a3fc84739e17b757";
 
@@ -32,7 +35,7 @@ public class MossolController {
             sha256_HMAC.init(secret_key);
 
             String hash = Base64.encodeBase64String(sha256_HMAC.doFinal(requestBody.getBytes()));
-            System.out.println("Hash Result :" + hash);
+            logger.debug("Hash Result {}", hash);
             return true;
         } catch (Exception e) {
             return false;
@@ -41,7 +44,7 @@ public class MossolController {
 
     @RequestMapping("/healthCheck")
     public HealthResponse healthCheck(@RequestParam(value = "name", defaultValue = "world")String name) {
-        System.out.println("healthCheck!!");
+        logger.debug("health check");
         return new HealthResponse(counter.incrementAndGet(), String.format(template, name));
     }
 
@@ -52,20 +55,20 @@ public class MossolController {
         LineResponse response = new LineResponse();
 
         if(!validateHeader(request)) {
-            System.out.println("ERROR : Abusing API Call!");
+            logger.debug("ERROR : Abusing API Call!");
             return null;
         }
 
         try {
             response.setResponse(requestObj.getEvents().toString());
         } catch (Exception e) {
-            System.out.println("ERROR : " + e);
+            logger.debug("ERROR : {}", e);
         }
 
         try {
             messageHandler.replyMessage(requestObj);
         } catch (Exception ignore) {
-            System.out.println("Exception occured in replyMessage");
+            logger.debug("Exception occured in replyMessage");
         }
 
         return response;

@@ -2,12 +2,14 @@ package net.mossol;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mossol.model.LineRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
 public final class MossolUtil {
-
+    private static final Logger logger = LoggerFactory.getLogger(MossolUtil.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static LineRequest readJsonString(String jsonString) {
@@ -16,7 +18,7 @@ public final class MossolUtil {
             request = OBJECT_MAPPER.readValue(jsonString, LineRequest.class);
             return request;
         } catch (Exception e) {
-            System.out.println("[ERROR] Converting to object failed");
+            logger.debug("[ERROR] Converting to object failed");
             return null;
         }
     }

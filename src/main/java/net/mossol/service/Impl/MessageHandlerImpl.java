@@ -6,6 +6,8 @@ import net.mossol.model.LineReplyRequest;
 import net.mossol.model.LineRequest;
 import net.mossol.service.LunchServiceHandler;
 import net.mossol.service.MessageHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MessageHandlerImpl implements MessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(MessageHandlerImpl.class);
     private static final String REPLY_URI = "https://api.line.me/v2/bot/message/reply";
     private static final String LEAVE_URI = "https://api.line.me/v2/bot/group/%s/leave";
     private static final HttpConnection httpConnection = new HttpConnection();
@@ -27,7 +30,7 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public boolean replyMessage(LineRequest request) throws Exception {
-        System.out.println("Logging : replyMessage" + request);
+        logger.debug("Logging : replyMessage {}", request);
         LineRequest.Event event =  request.getEvents().get(0);
 
         if (event.getType().equals("message")) {
