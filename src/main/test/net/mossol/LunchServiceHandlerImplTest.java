@@ -12,7 +12,10 @@ public class LunchServiceHandlerImplTest {
     @Test
     public void selectMenu() {
         LunchServiceHandler lunchServiceHandler = new LunchServiceHandlerImpl();
-        String menu = lunchServiceHandler.selectMenu();
+        String menu = lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.KOREAN_FOOD);
+        System.out.println("msg : " + menu);
+
+        menu = lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.JAPAN_FOOD);
         System.out.println("msg : " + menu);
     }
 }
