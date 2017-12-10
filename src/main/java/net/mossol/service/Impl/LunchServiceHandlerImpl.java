@@ -19,6 +19,7 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     private final String removeFormat = "멍멍 %s 가지마세요! 가면 깨뭅니다";
     private final String removeFail = "멍멍 그런 메뉴 없어요";
     private final String alreadyExistMenu = "멍멍 이미 있는 곳이에요";
+    private final String addFail = "왈왈! 추가 실패!!";
     private List<String> lunchCandidate = new ArrayList<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비",
             "버거킹", "숯불정식", "돈돈정", "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
             "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜"));
@@ -72,6 +73,10 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     @Override
     public String addMenu(String food, foodType type) {
         logger.debug("addMenu : " + food);
+        if (food.isEmpty()) {
+            return addFail;
+        }
+
         List<String> menu = selectMenuType(type);
         int idx = isExistinMenu(food, menu);
         if (idx != menu.size()) {
@@ -88,6 +93,10 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     @Override
     public String removeMenu(String food, foodType type) {
         logger.debug("remove Menu : " + food);
+        if (food.isEmpty()) {
+            return removeFail;
+        }
+
         List<String> menu = selectMenuType(type);
         int idx = isExistinMenu(food, menu);
 

@@ -49,7 +49,7 @@ public class MessageHandlerImpl implements MessageHandler {
             Matcher japanAddMatcher = JAPAN_ADD_PATTERN.matcher(message);
             Matcher japanRemoveMatcher = JAPAN_REMOVE_PATTERN.matcher(message);
 
-            message.replaceAll("\\s+", "");
+            message = message.replaceAll("\\s+", "");
 
             if (message.contains("안녕")) {
                 LineReplyRequest replyRequest = new LineReplyRequest();

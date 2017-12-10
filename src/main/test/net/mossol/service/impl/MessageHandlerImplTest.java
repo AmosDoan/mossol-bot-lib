@@ -1,15 +1,14 @@
 package net.mossol.service.impl;
 
-import net.mossol.Application;
 import net.mossol.HttpConnection;
 import net.mossol.model.LineRequest;
 import net.mossol.service.LunchServiceHandler;
 import net.mossol.service.MessageHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -19,16 +18,17 @@ import java.util.List;
  * Created by Amos.Doan.Mac on 2017. 12. 10..
  */
 @RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
 public class MessageHandlerImplTest {
 
     @Autowired
     private MessageHandler messageHandler;
 
     @Mock
-    HttpConnection httpConnection;
+    private HttpConnection httpConnection;
 
     @Mock
-    LunchServiceHandler lunchServiceHandler;
+    private LunchServiceHandler lunchServiceHandler;
 
     @Test
     public void testMessage() throws Exception {
