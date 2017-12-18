@@ -26,6 +26,7 @@ public class LineRequest {
         private String type;
         private String userId;
         private String groupId;
+        private String roomId;
     }
 
     @Data

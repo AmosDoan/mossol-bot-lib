@@ -52,6 +52,11 @@ public class MossolController {
     public LineResponse getLine(@RequestHeader(value = "X-Line-Signature") String signature,
                                 @RequestBody String request) {
         LineRequest requestObj = MossolUtil.readJsonString(request);
+
+        if (requestObj == null) {
+            return null;
+        }
+
         LineResponse response = new LineResponse();
 
         if(!validateHeader(request)) {

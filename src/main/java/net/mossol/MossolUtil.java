@@ -18,7 +18,7 @@ public final class MossolUtil {
             request = OBJECT_MAPPER.readValue(jsonString, LineRequest.class);
             return request;
         } catch (Exception e) {
-            logger.debug("[ERROR] Converting to object failed");
+            logger.debug("[ERROR] Converting to object failed. Received Json String <{}>", jsonString);
             return null;
         }
     }
@@ -28,8 +28,7 @@ public final class MossolUtil {
             if (obj == null) {
                 return null;
             }
-            String json = OBJECT_MAPPER.writeValueAsString(obj);
-            return json;
+            return OBJECT_MAPPER.writeValueAsString(obj);
         } catch (Exception e) {
             return null;
         }
