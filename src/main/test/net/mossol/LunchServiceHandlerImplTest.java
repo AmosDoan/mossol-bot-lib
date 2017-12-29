@@ -9,13 +9,14 @@ import org.junit.Test;
  */
 public class LunchServiceHandlerImplTest {
 
+    private LunchServiceHandler lunchServiceHandler = new LunchServiceHandlerImpl();
+
     @Test
     public void selectMenu() {
-        LunchServiceHandler lunchServiceHandler = new LunchServiceHandlerImpl();
-        String menu = lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.KOREAN_FOOD);
+        String menu = lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.KOREA_FOOD);
         System.out.println("msg : " + menu);
 
-        menu = lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.JAPAN_FOOD);
+        menu = lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.JAPAN_FOOD);
         System.out.println("msg : " + menu);
     }
 }

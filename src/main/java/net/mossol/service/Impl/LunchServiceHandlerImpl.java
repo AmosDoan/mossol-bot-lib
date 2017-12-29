@@ -1,8 +1,10 @@
 package net.mossol.service.Impl;
 
+import net.mossol.context.MenuContextUtil;
 import net.mossol.service.LunchServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,26 +22,28 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     private final String removeFail = "멍멍 그런 메뉴 없어요";
     private final String alreadyExistMenu = "멍멍 이미 있는 곳이에요";
     private final String addFail = "왈왈! 추가 실패!!";
-    private List<String> lunchCandidate = new ArrayList<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비",
-            "버거킹", "숯불정식", "돈돈정", "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
-            "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜"));
-    private List<String> lunchJapanCandidate = new ArrayList<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠",
-            "꼬치", "덴뿌라", "쉑쉑버거", "카레"));
+
+    @Autowired
+    private List<String> koreaMenu;
+
+    @Autowired
+    private List<String> japanMenu;
+
     private Random random = new Random();
 
-    private List<String> selectMenuType(foodType type) {
-        if (type == foodType.KOREAN_FOOD) {
-            logger.debug("KOREAN_FOOD");
-            return lunchCandidate;
-        } else if (type == foodType.JAPAN_FOOD) {
+    private List<String> selectMenuType(FoodType type) {
+        if (type == FoodType.KOREA_FOOD) {
+            logger.debug("KOREA_FOOD");
+            return koreaMenu;
+        } else if (type == FoodType.JAPAN_FOOD) {
             logger.debug("JAPAN_FOOD");
-            return lunchJapanCandidate;
+            return japanMenu;
         } else {
-            return lunchCandidate;
+            return koreaMenu;
         }
     }
 
-    private int isExistinMenu(String food, List<String> menu) {
+    private int isExistingMenu(String food, List<String> menu) {
         int i;
         for (i = 0; i < menu.size(); i++) {
             String element = menu.get(i);
@@ -51,7 +55,7 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     }
 
     @Override
-    public String getMenu(foodType type) {
+    public String getMenu(FoodType type) {
         logger.debug("getMenu");
         List<String> menu = selectMenuType(type);
         String msg = String.format(menuFormat, String.join("\n", menu));
@@ -60,7 +64,7 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     }
 
     @Override
-    public String selectMenu(foodType type) {
+    public String selectMenu(FoodType type) {
         logger.debug("selectMenu");
         List<String> menu = selectMenuType(type);
         int idx = (random.nextInt() & Integer.MAX_VALUE)% menu.size();
@@ -71,14 +75,14 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     }
 
     @Override
-    public String addMenu(String food, foodType type) {
+    public String addMenu(String food, FoodType type) {
         logger.debug("addMenu : " + food);
         if (food.isEmpty()) {
             return addFail;
         }
 
         List<String> menu = selectMenuType(type);
-        int idx = isExistinMenu(food, menu);
+        int idx = isExistingMenu(food, menu);
         if (idx != menu.size()) {
             return alreadyExistMenu;
         }
@@ -86,19 +90,22 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         menu.add(food);
         String msg = String.format(addFormat, food);
         logger.debug("DEBUG : {}", msg);
+
+        MenuContextUtil.updateMenu(menu, type);
+
         return msg;
     }
 
     // TODO : Lunch List should be hash to remove in O(1)
     @Override
-    public String removeMenu(String food, foodType type) {
+    public String removeMenu(String food, FoodType type) {
         logger.debug("remove Menu : " + food);
         if (food.isEmpty()) {
             return removeFail;
         }
 
         List<String> menu = selectMenuType(type);
-        int idx = isExistinMenu(food, menu);
+        int idx = isExistingMenu(food, menu);
 
         if (idx == menu.size()) {
             return removeFail;
@@ -107,6 +114,9 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         menu.remove(idx);
         String msg = String.format(removeFormat, food);
         logger.debug("DEBUG : {}", msg);
+
+        MenuContextUtil.updateMenu(menu, type);
+
         return msg;
     }
 }

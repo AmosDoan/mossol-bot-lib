@@ -65,7 +65,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.foodType.KOREAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.FoodType.KOREA_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -74,7 +74,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.foodType.JAPAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.FoodType.JAPAN_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -96,12 +96,21 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
+            } else if (message.equals("다녀오세요")) {
+                LineReplyRequest replyRequest = new LineReplyRequest();
+                replyRequest.setReplyToken(token);
+
+                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
+                replyMessage.setText("카이지상이 다녀오세요 멍멍!!");
+                replyMessage.setType("text");
+                replyRequest.setMessage(replyMessage);
+                return sendRequest(REPLY_URI, replyRequest);
             } else if (message.equals("메뉴골라줘")) {
                 LineReplyRequest replyRequest = new LineReplyRequest();
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.KOREAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.KOREA_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -110,7 +119,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.foodType.JAPAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.JAPAN_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -124,7 +133,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.foodType.KOREAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.FoodType.KOREA_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -134,7 +143,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.foodType.KOREAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.FoodType.KOREA_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -144,7 +153,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.foodType.JAPAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.FoodType.JAPAN_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
@@ -154,7 +163,7 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyRequest.setReplyToken(token);
 
                 LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.foodType.JAPAN_FOOD));
+                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.FoodType.JAPAN_FOOD));
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
