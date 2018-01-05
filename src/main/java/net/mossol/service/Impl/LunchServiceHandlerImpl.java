@@ -1,5 +1,6 @@
 package net.mossol.service.Impl;
 
+import com.linecorp.centraldogma.client.Watcher;
 import net.mossol.context.MenuContextUtil;
 import net.mossol.service.LunchServiceHandler;
 import org.slf4j.Logger;
@@ -7,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -29,7 +33,59 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     @Autowired
     private List<String> japanMenu;
 
+    @Autowired
+    private Watcher<List<String>> japanMenuWatcher;
+
+    @Autowired
+    private Watcher<List<String>> koreaMenuWatcher;
+
     private Random random = new Random();
+
+    private static boolean japanMenuFirstLoad = true;
+    private static boolean koreaMenuFirstLoad = true;
+
+    @PostConstruct
+    private void init() throws InterruptedException {
+        japanMenuWatcher.watch((revision, menu) -> {
+            if (japanMenuFirstLoad) {
+                japanMenuFirstLoad = false;
+                return;
+            }
+
+            if (menu == null)  {
+                logger.warn("Japan Menu Watch Failed");
+                return;
+            }
+            logger.info("Japan Menu Updated : " + menu);
+            japanMenu = menu;
+        });
+
+        koreaMenuWatcher.watch((revision, menu) -> {
+            if (koreaMenuFirstLoad) {
+                koreaMenuFirstLoad = false;
+                return;
+            }
+
+            if (menu == null)  {
+                logger.warn("Korea Menu Watch Failed");
+                return;
+            }
+            logger.info("Korea Menu Updated : " + menu);
+            koreaMenu = menu;
+        });
+
+        try {
+            japanMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.error("Failed fetch Japan Menu from Central Dogma");
+        }
+
+        try {
+            koreaMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.error("Failed fetch Korea Menu from Central Dogma");
+        }
+    }
 
     private List<String> selectMenuType(FoodType type) {
         if (type == FoodType.KOREA_FOOD) {
