@@ -31,7 +31,7 @@ public class MessageHandlerImpl implements MessageHandler {
     @Autowired
     private LunchServiceHandler lunchServiceHandler;
 
-    private boolean sendRequest(String uri, Object request) {
+    private static boolean sendRequest(String uri, Object request) {
         return httpConnection.post(uri, MossolUtil.writeJsonString(request));
     }
 

@@ -16,10 +16,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class MenuContextUtil {
+public final class MenuContextUtil {
     private static final Logger logger = LoggerFactory.getLogger(MenuContextConfiguration.class);
     private static final CentralDogma centralDogma = CentralDogma.forHost("mossol.net");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private MenuContextUtil(){}
 
     private static String convertToJsonNode(List<String> list) {
         try {
