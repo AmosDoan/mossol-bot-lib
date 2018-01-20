@@ -87,6 +87,15 @@ public class MessageHandlerImpl implements MessageHandler {
                 replyMessage.setType("text");
                 replyRequest.setMessage(replyMessage);
                 return sendRequest(REPLY_URI, replyRequest);
+            } else if (message.equals("희승님께인사")) {
+                LineReplyRequest replyRequest = new LineReplyRequest();
+                replyRequest.setReplyToken(token);
+
+                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
+                replyMessage.setText("희승님 아르메리아 PR 머지해주세요 멍멍!");
+                replyMessage.setType("text");
+                replyRequest.setMessage(replyMessage);
+                return sendRequest(REPLY_URI, replyRequest);
             } else if (message.equals("헐")) {
                 LineReplyRequest replyRequest = new LineReplyRequest();
                 replyRequest.setReplyToken(token);

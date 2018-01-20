@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -23,7 +24,7 @@ public final class MenuContextUtil {
 
     private MenuContextUtil(){}
 
-    private static String convertToJsonNode(List<String> list) {
+    private static String convertToJsonNode(Set<String> list) {
         try {
             return OBJECT_MAPPER.writeValueAsString(list);
         } catch (IOException e) {
@@ -32,7 +33,7 @@ public final class MenuContextUtil {
         }
     }
 
-    public static void updateMenu(List<String> menu, FoodType foodType) {
+    public static void updateMenu(Set<String> menu, FoodType foodType) {
         String jsonMenu = convertToJsonNode(menu);
         if (jsonMenu == null) {
             return;
