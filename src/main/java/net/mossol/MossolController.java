@@ -28,15 +28,20 @@ public class MossolController {
     @Autowired
     private MessageHandler messageHandler;
 
-    private boolean validateHeader(String requestBody) {
+    private boolean validateHeader(String requestBody, String signature) {
         try {
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
             SecretKeySpec secret_key = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
             sha256_HMAC.init(secret_key);
 
             String hash = Base64.encodeBase64String(sha256_HMAC.doFinal(requestBody.getBytes()));
-            logger.debug("Hash Result {}", hash);
-            return true;
+            if (signature.equals(hash)) {
+                logger.debug("PASS: Hash Result {}, Signature {}", hash, signature);
+                return true;
+            } else {
+                logger.debug("FAIL: Hash Result {}, Signature {}", hash, signature);
+                return false;
+            }
         } catch (Exception e) {
             return false;
         }
@@ -59,7 +64,7 @@ public class MossolController {
 
         LineResponse response = new LineResponse();
 
-        if(!validateHeader(request)) {
+        if(!validateHeader(request, signature)) {
             logger.debug("ERROR : Abusing API Call!");
             return null;
         }
