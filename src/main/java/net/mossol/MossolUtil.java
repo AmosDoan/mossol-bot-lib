@@ -1,5 +1,6 @@
 package net.mossol;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mossol.model.LineRequest;
 import org.slf4j.Logger;
@@ -12,13 +13,15 @@ public final class MossolUtil {
     private static final Logger logger = LoggerFactory.getLogger(MossolUtil.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static LineRequest readJsonString(String jsonString) {
+    public static LineRequest readJsonString(JsonNode jsonNode) {
         try {
             LineRequest request;
-            request = OBJECT_MAPPER.readValue(jsonString, LineRequest.class);
+            request = OBJECT_MAPPER.treeToValue(jsonNode, LineRequest.class);
             return request;
         } catch (Exception e) {
-            logger.debug("[ERROR] Converting to object failed. Received Json String <{}>", jsonString);
+            logger.debug("[ERROR] Converting to object failed. Received Json String <{}>  cause : <{}>",
+                         jsonNode,
+                         e.getMessage());
             return null;
         }
     }
