@@ -1,26 +1,41 @@
 package net.mossol;
 
-import net.mossol.model.HealthResponse;
-import net.mossol.model.LineRequest;
-import net.mossol.model.LineResponse;
-import net.mossol.service.MessageHandler;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.Resource;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.concurrent.atomic.AtomicLong;
+import net.mossol.model.LineRequest;
+import net.mossol.model.LineResponse;
+import net.mossol.service.MessageHandler;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.server.annotation.Default;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Header;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.Path;
+import com.linecorp.armeria.server.annotation.Post;
+import com.linecorp.armeria.server.annotation.RequestObject;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
-@RestController
+@Service
 public class MossolController {
     private static final Logger logger = LoggerFactory.getLogger(MossolController.class);
-    private static final String template = "Hello, %s!";
+    private static final String template = "%dth, Hello, %s!";
     private static final String SECRET_KEY = "49588e53b2c64f47a3fc84739e17b757";
 
     private final AtomicLong counter = new AtomicLong();
@@ -47,40 +62,43 @@ public class MossolController {
         }
     }
 
-    @RequestMapping("/healthCheck")
-    public HealthResponse healthCheck(@RequestParam(value = "name", defaultValue = "world")String name) {
+    @Get("/healthCheck")
+    public HttpResponse healthCheck(@Param("name") @Default("world") String name) {
         logger.debug("health check");
-        return new HealthResponse(counter.incrementAndGet(), String.format(template, name));
+        return HttpResponse.of(HttpStatus.OK, MediaType.PLAIN_TEXT_UTF_8,
+                               String.format(template, counter.incrementAndGet(), name));
     }
 
-    @RequestMapping(value = "/line", method = RequestMethod.POST)
-    public LineResponse getLine(@RequestHeader(value = "X-Line-Signature") String signature,
-                                @RequestBody String request) {
+    @Post
+    @Path("/line")
+    public HttpResponse getLine(@Header("X-Line-Signature") String signature,
+                                @RequestObject JsonNode request) {
         LineRequest requestObj = MossolUtil.readJsonString(request);
 
         if (requestObj == null) {
             return null;
         }
 
-        LineResponse response = new LineResponse();
-
-        if(!validateHeader(request, signature)) {
+        if(!validateHeader(request.toString(), signature)) {
             logger.debug("ERROR : Abusing API Call!");
             return null;
         }
 
+        try {
+            messageHandler.replyMessage(requestObj);
+        } catch (Exception ignore) {
+            logger.debug("Exception occured in replyMessage", ignore);
+        }
+
+        LineResponse response = new LineResponse();
         try {
             response.setResponse(requestObj.getEvents().toString());
         } catch (Exception e) {
             logger.debug("ERROR : {}", e);
         }
 
-        try {
-            messageHandler.replyMessage(requestObj);
-        } catch (Exception ignore) {
-            logger.debug("Exception occured in replyMessage");
-        }
-
-        return response;
+        HttpResponse httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, requestObj.getEvents().toString());
+        logger.debug("httpResponse <{}>", httpResponse);
+        return httpResponse;
     }
 }

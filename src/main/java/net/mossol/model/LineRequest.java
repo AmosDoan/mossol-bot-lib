@@ -34,5 +34,7 @@ public class LineRequest {
         private String id;
         private String type;
         private String text;
+        private String packageId;
+        private String stickerId;
     }
 }
