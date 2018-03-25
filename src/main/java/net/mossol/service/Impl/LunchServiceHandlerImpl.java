@@ -1,8 +1,10 @@
 package net.mossol.service.Impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.mossol.context.MenuContextUtil;
+import net.mossol.model.LocationInfo;
 import net.mossol.service.LunchServiceHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
@@ -34,8 +37,13 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     private static final String alreadyExistMenu = "멍멍 이미 있는 곳이에요";
     private static final String addFail = "왈왈! 추가 실패!!";
 
-    private Set<String> koreaMenu;
-    private Set<String> japanMenu;
+    private volatile Set<String> koreaMenu;
+    private volatile Set<String> japanMenu;
+    private volatile Set<String> drinkMenu;
+    private volatile Map<String, LocationInfo> locationInfo;
+
+    private static final Set<String> drinkDefaultCandidate =
+        new HashSet<>(Arrays.asList("사랑애수산", "더블린"));
     private static final Set<String> koreaDefaultCandidate =
         new HashSet<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비", "버거킹", "숯불정식", "돈돈정",
                                     "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
@@ -49,12 +57,19 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     @Autowired
     private Watcher<Set<String>> koreaMenuWatcher;
 
+    @Autowired
+    private Watcher<Set<String>> drinkMenuWatcher;
+
+    @Autowired
+    private Watcher<Map<String, LocationInfo>> locationInfoWatcher;
+
     private final Random random = new Random();
 
     @PostConstruct
     private void init() throws InterruptedException {
         japanMenu = japanDefaultCandidate;
         koreaMenu = koreaDefaultCandidate;
+        locationInfo = Collections.emptyMap();
 
         japanMenuWatcher.watch((revision, menu) -> {
             if (menu == null)  {
@@ -83,16 +98,50 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         try {
             koreaMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu");
+            logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu", e);
+        }
+
+        drinkMenuWatcher.watch((revision, menu) -> {
+            if (menu == null)  {
+                logger.warn("Drink Menu Watch Failed");
+                return;
+            }
+            logger.info("Drink Menu Updated : " + menu);
+            drinkMenu = menu;
+        });
+
+        try {
+            drinkMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.error("Failed fetch Drink Menu from Central Dogma; Set the Default Menu", e);
+        }
+
+        locationInfoWatcher.watch((revision, info) -> {
+            if (info == null)  {
+                logger.warn("Location info Watch Failed");
+                return;
+            }
+            logger.info("Location Info Updated : " + info);
+            locationInfo = info;
+        });
+
+        try {
+            locationInfoWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.error("Failed location info from Central Dogma; Set the empty map", e);
         }
     }
 
     private Set<String> selectMenuType(FoodType type) {
-        if (type == FoodType.JAPAN_FOOD) {
-            logger.debug("JAPAN_FOOD");
-            return japanMenu;
-        } else {
-            return koreaMenu;
+        switch (type) {
+            case JAPAN_FOOD:
+                return japanMenu;
+            case KOREA_FOOD:
+                return koreaMenu;
+            case DRINK_FOOD:
+                return drinkMenu;
+            default:
+                return koreaMenu;
         }
     }
 
@@ -117,7 +166,13 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         }
 
         String select = iterator.next();
-        String msg = String.format(selectFormat, select);
+        logger.debug("Selected Menu : {}", select);
+        return select;
+    }
+
+    @Override
+    public String getSelectedMenuFormat(String food) {
+        String msg = String.format(selectFormat, food);
         logger.debug("DEBUG : {}", msg);
         return msg;
     }
@@ -162,5 +217,10 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         MenuContextUtil.updateMenu(menu, type);
 
         return msg;
+    }
+
+    @Override
+    public LocationInfo getLocationInfo(String food) {
+        return locationInfo.getOrDefault(food, null);
     }
 }

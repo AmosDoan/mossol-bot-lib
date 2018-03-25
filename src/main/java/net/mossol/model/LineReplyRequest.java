@@ -10,16 +10,10 @@ import java.util.List;
  */
 @Data
 public class LineReplyRequest {
-    private String replyToken;
-    private List<Message> messages = new ArrayList<>();
+    private final String replyToken;
+    private List<LineMessage> messages = new ArrayList<>();
 
-    public void setMessage(Message message) {
+    public void setMessage(LineMessage message) {
         messages.add(message);
-    }
-
-    @Data
-    public static class Message {
-        private String type;
-        private String text;
     }
 }
