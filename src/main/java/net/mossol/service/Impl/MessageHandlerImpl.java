@@ -4,8 +4,12 @@ import net.mossol.HttpConnection;
 import net.mossol.MossolUtil;
 import net.mossol.model.LineReplyRequest;
 import net.mossol.model.LineRequest;
+import net.mossol.model.Message.TextMessage;
 import net.mossol.service.LunchServiceHandler;
+import net.mossol.service.LunchServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
+import net.mossol.util.MessageBuildUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +36,9 @@ public class MessageHandlerImpl implements MessageHandler {
     private LunchServiceHandler lunchServiceHandler;
 
     private static boolean sendRequest(String uri, Object request) {
-        return httpConnection.post(uri, MossolUtil.writeJsonString(request));
+        String payload = MossolUtil.writeJsonString(request);
+        logger.debug("sendRequeest Payload : {}", payload);
+        return httpConnection.post(uri, payload);
     }
 
     @Override
@@ -52,134 +58,60 @@ public class MessageHandlerImpl implements MessageHandler {
             message = message.replaceAll("\\s+", "");
 
             if (message.contains("안녕")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText("멍멍!!");
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, "멍멍!!"));
             } else if (message.equals("메뉴후보")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.FoodType.KOREA_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String menuCandidate = lunchServiceHandler.getMenu(FoodType.KOREA_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, menuCandidate));
             } else if (message.equals("일본메뉴후보")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.getMenu(LunchServiceHandler.FoodType.JAPAN_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String menuCandidate = lunchServiceHandler.getMenu(FoodType.JAPAN_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, menuCandidate));
             } else if (message.equals("수안님께인사")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText("수안님 밀크시슬 드세요 멍멍");
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                return sendRequest(REPLY_URI,
+                                   MessageBuildUtil.sendTextMessage(token, "수안님 밀크시슬 드세요 멍멍"));
             } else if (message.equals("희승님께인사")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText("희승님 아르메리아 PR 머지해주세요 멍멍!");
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                return sendRequest(REPLY_URI,
+                                   MessageBuildUtil.sendTextMessage(token, "희승님 아르메리아 PR 머지해주세요 멍멍!"));
             } else if (message.equals("헐")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText("헐 멍멍!!");
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                return sendRequest(REPLY_URI,
+                                   MessageBuildUtil.sendTextMessage(token, "헐 멍멍!!"));
             } else if (message.equals("다녀오세요")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText("카이지상이 다녀오세요 멍멍!!");
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                return sendRequest(REPLY_URI,
+                                   MessageBuildUtil.sendTextMessage(token, "카이지상이 다녀오세요 멍멍!!"));
             } else if (message.equals("메뉴골라줘")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.KOREA_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String todayMenu = lunchServiceHandler.selectMenu(FoodType.KOREA_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, todayMenu));
             } else if (message.equals("일본메뉴골라줘")) {
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.selectMenu(LunchServiceHandler.FoodType.JAPAN_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String todayMenu = lunchServiceHandler.selectMenu(FoodType.JAPAN_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, todayMenu));
+            } else if (message.equals("테스트!@")) {
+                sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token,"헐ㅠ"));
+                logger.debug("TEST");
+                LineReplyRequest locationRequest =
+                    MessageBuildUtil.sendLocationMessage(token, "흑","우리집", "복정동 641번지",
+                                                         37.467185, 127.127161);
+                return sendRequest(REPLY_URI, locationRequest);
             } else if (message.equals("/집으로")) {
                 String groupId =  event.getSource().getGroupId();
                 String uri = String.format(LEAVE_URI, groupId);
                 sendRequest(uri, null);
             } else if (addMatcher.find()) {
-                String food = addMatcher.group();
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.FoodType.KOREA_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String addMenuResult = lunchServiceHandler.addMenu(addMatcher.group(), FoodType.KOREA_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
             } else if (removeMatcher.find()) {
-                String food = removeMatcher.group();
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.FoodType.KOREA_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String removeMenuResult = lunchServiceHandler.removeMenu(removeMatcher.group(),
+                                                                         FoodType.KOREA_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
             } else if (japanAddMatcher.find()) {
-                String food = japanAddMatcher.group();
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.addMenu(food, LunchServiceHandler.FoodType.JAPAN_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String addMenuResult = lunchServiceHandler.addMenu(japanAddMatcher.group(), FoodType.JAPAN_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
             } else if (japanRemoveMatcher.find()) {
-                String food = japanRemoveMatcher.group();
-                LineReplyRequest replyRequest = new LineReplyRequest();
-                replyRequest.setReplyToken(token);
-
-                LineReplyRequest.Message replyMessage = new LineReplyRequest.Message();
-                replyMessage.setText(lunchServiceHandler.removeMenu(food, LunchServiceHandler.FoodType.JAPAN_FOOD));
-                replyMessage.setType("text");
-                replyRequest.setMessage(replyMessage);
-                return sendRequest(REPLY_URI, replyRequest);
+                String removeMenuResult = lunchServiceHandler.removeMenu(japanRemoveMatcher.group(),
+                                                                         FoodType.JAPAN_FOOD);
+                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
             }
         } else if (event.getType().equals("join")) {
             String groupId =  event.getSource().getGroupId();
-            System.out.println("Join the group " + groupId);
+            logger.debug("Join the group {}", groupId);
             return true;
         }
 
