@@ -1,31 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
-    <property name="LOG_LOCATION" value="../logs" />
-    <property name="LOG_FILE" value="${LOG_LOCATION}/mossol_webapp.log" />
-    <property name="DEBUG_LOG_FILE" value="${LOG_LOCATION}/mossol_debug_webapp.log" />
+  <property name="LOG_LOCATION" value="../logs" />
+  <property name="LOG_FILE" value="${LOG_LOCATION}/mossol_webapp.log" />
+  <property name="DEBUG_LOG_FILE" value="${LOG_LOCATION}/mossol_debug_webapp.log" />
+  <property name="ACCESS_LOG_FILE" value="${LOG_LOCATION}/mossol_access.log" />
 
-    <!-- FILE Appender -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_FILE}</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_FILE}.%d{yyyyMMdd}</fileNamePattern>
-            <maxHistory>60</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
-        </encoder>
-    </appender>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F] %M\(%L\) : %m%n</pattern>
-        </layout>
-    </appender>
+  <!-- FILE Appender -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_FILE}.%d{yyyyMMdd}</fileNamePattern>
+      <maxHistory>60</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F] %M\(%L\) : %m%n</pattern>
+    </layout>
+  </appender>
+  <appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${ACCESS_LOG_FILE}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>access.%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+      <!-- each file should be at most 1GB, keep 30 days worth of history, but at most 30GB -->
+      <maxFileSize>1GB</maxFileSize>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>30GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
 
-    <logger name="net.mossol" level="DEBUG">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="STDOUT" />
-    </logger>
+  <logger name="net.mossol" level="DEBUG">
+    <appender-ref ref="FILE" />
+    <appender-ref ref="STDOUT" />
+  </logger>
+  <logger name="com.linecorp.armeria.logging.access" level="INFO" additivity="false">
+    <appender-ref ref="ACCESS"/>
+  </logger>
 </configuration>
