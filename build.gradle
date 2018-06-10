@@ -29,9 +29,9 @@ repositories {
      mavenCentral()
 }
 dependencies {
-    compile group: 'com.linecorp.armeria', name: 'armeria', version:'0.58.1'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter', version:'0.58.1'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure', version:'0.58.1'
+    compile group: 'com.linecorp.armeria', name: 'armeria', version:'0.65.1'
+    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter', version:'0.65.1'
+    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure', version:'0.65.1'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.8.RELEASE'
     compile(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5') {
 exclude(module: 'commons-logging')
