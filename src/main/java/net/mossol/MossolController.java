@@ -2,7 +2,6 @@ package net.mossol;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.Resource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
