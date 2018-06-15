@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 
 import net.mossol.MossolController;
 
-import com.linecorp.armeria.server.logging.AccessLogWriters;
 import com.linecorp.armeria.spring.AnnotatedServiceRegistrationBean;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 
@@ -26,6 +25,8 @@ public class AnnotatedServiceConfiguration {
 
     @Bean
     public ArmeriaServerConfigurator armeriaServerConfigurator() {
-        return serverBuilder -> serverBuilder.accessLogWriter(AccessLogWriters.common());
+        return serverBuilder ->
+            serverBuilder.accessLogFormat("%h %l %u %t '%r' %s %b '%{X-Forwarded-For}i' '%{Referer}i'"
+                                          + " '%{User-Agent}i' '%{Cookie}i'");
     }
 }
