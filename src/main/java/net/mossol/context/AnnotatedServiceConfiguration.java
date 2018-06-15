@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Configuration;
 
 import net.mossol.MossolController;
 
+import com.linecorp.armeria.server.logging.AccessLogWriters;
 import com.linecorp.armeria.spring.AnnotatedServiceRegistrationBean;
+import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 
 @Configuration
 public class AnnotatedServiceConfiguration {
@@ -20,5 +22,10 @@ public class AnnotatedServiceConfiguration {
         return new AnnotatedServiceRegistrationBean().setServiceName("MOSSOL")
                                                      .setPathPrefix("/")
                                                      .setService(mossolController);
+    }
+
+    @Bean
+    public ArmeriaServerConfigurator armeriaServerConfigurator() {
+        return serverBuilder -> serverBuilder.accessLogWriter(AccessLogWriters.common());
     }
 }
