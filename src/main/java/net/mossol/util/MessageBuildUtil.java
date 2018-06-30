@@ -1,7 +1,7 @@
 package net.mossol.util;
 
 import net.mossol.model.LineReplyRequest;
-import net.mossol.model.LocationInfo;
+import net.mossol.model.MenuInfo;
 import net.mossol.model.Message.LocationMessage;
 import net.mossol.model.Message.TextMessage;
 
@@ -40,19 +40,18 @@ public final class MessageBuildUtil {
         return replyRequest;
     }
 
-    public static LineReplyRequest sendFoodMessage(String token, String content) {
+    public static LineReplyRequest sendFoodMessage(String token, String content, MenuInfo menuInfo) {
         LineReplyRequest replyRequest = new LineReplyRequest(token);
         replyRequest.setMessage(buildTextMessage(content));
-        replyRequest.setMessage(buildTextMessage(NO_LOCATION));
-        return replyRequest;
-    }
-
-    public static LineReplyRequest sendFoodMessage(String token, String content, LocationInfo locationInfo) {
-        LineReplyRequest replyRequest = new LineReplyRequest(token);
-        replyRequest.setMessage(buildTextMessage(content));
-        replyRequest.setMessage(buildTextMessage(EXIST_LOCATION));
-        replyRequest.setMessage(buildLocationMessage(locationInfo.getTitle(), locationInfo.getTitle(),
-                                                     locationInfo.getLatitude(), locationInfo.getLongitude()));
+        if (Double.compare(menuInfo.getLatitude(), -1) == 0 &&
+            Double.compare(menuInfo.getLongitude(), -1) == 0) {
+            replyRequest.setMessage(buildTextMessage(content));
+            replyRequest.setMessage(buildTextMessage(NO_LOCATION));
+        } else {
+            replyRequest.setMessage(buildTextMessage(EXIST_LOCATION));
+            replyRequest.setMessage(buildLocationMessage(menuInfo.getTitle(), menuInfo.getTitle(),
+                                                         menuInfo.getLatitude(), menuInfo.getLongitude()));
+        }
         return replyRequest;
     }
 }

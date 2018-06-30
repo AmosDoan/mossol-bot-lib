@@ -1,11 +1,13 @@
 package net.mossol.service;
 
-import net.mossol.model.LocationInfo;
+import net.mossol.model.MenuInfo;
+
+import javafx.util.Pair;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
-public interface LunchServiceHandler {
+public interface MenuServiceHandler {
 
     enum FoodType {
         KOREA_FOOD,
@@ -14,9 +16,7 @@ public interface LunchServiceHandler {
     }
 
     String getMenu(FoodType type);
-    String selectMenu(FoodType type);
-    String getSelectedMenuFormat(String food);
+    Pair<String, MenuInfo> selectMenu(FoodType type);
     String addMenu(String food, FoodType type);
     String removeMenu(String food, FoodType type);
-    LocationInfo getLocationInfo(String food);
 }

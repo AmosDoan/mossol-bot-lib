@@ -1,6 +1,6 @@
 package net.mossol;
 
-import net.mossol.service.Impl.LunchServiceHandlerImpl;
+import net.mossol.service.Impl.MenuServiceHandlerImpl;
 import net.mossol.service.LunchServiceHandler;
 import org.junit.Test;
 

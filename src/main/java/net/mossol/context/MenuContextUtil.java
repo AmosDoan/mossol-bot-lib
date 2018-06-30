@@ -1,21 +1,24 @@
 package net.mossol.context;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.mossol.model.MenuInfo;
+import net.mossol.service.MenuServiceHandler.FoodType;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.linecorp.centraldogma.client.CentralDogma;
 import com.linecorp.centraldogma.common.Author;
 import com.linecorp.centraldogma.common.Change;
 import com.linecorp.centraldogma.common.Commit;
 import com.linecorp.centraldogma.common.Revision;
 import com.linecorp.centraldogma.internal.thrift.CentralDogmaException;
-import net.mossol.service.LunchServiceHandler.FoodType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 public final class MenuContextUtil {
     private static final Logger logger = LoggerFactory.getLogger(MenuContextConfiguration.class);
@@ -24,16 +27,16 @@ public final class MenuContextUtil {
 
     private MenuContextUtil(){}
 
-    private static String convertToJsonNode(Set<String> list) {
+    private static String convertToJsonNode(Map<String, MenuInfo> map) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(list);
+            return OBJECT_MAPPER.writeValueAsString(map);
         } catch (IOException e) {
-            logger.error("Converting Json to List Failed");
+            logger.error("Converting Json to Map Failed");
             return null;
         }
     }
 
-    public static void updateMenu(Set<String> menu, FoodType foodType) {
+    public static void updateMenu(Map<String, MenuInfo> menu, FoodType foodType) {
         String jsonMenu = convertToJsonNode(menu);
         if (jsonMenu == null) {
             return;
@@ -49,7 +52,7 @@ public final class MenuContextUtil {
         CompletableFuture<Commit> future = null;
         try {
              future =
-                    centralDogma.push("Mossol_Line_BOT", "main", Revision.HEAD,
+                    centralDogma.push("mossol", "main", Revision.HEAD,
                             new Author("Mossol", "amos.doan@gmail.com"),
                             "Add new Menu",
                             Change.ofJsonUpsert(jsonPath, jsonMenu));
