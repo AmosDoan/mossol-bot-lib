@@ -1,6 +1,7 @@
 package net.mossol.context;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,7 +33,7 @@ public class MenuContextConfiguration {
     private static Map<String, MenuInfo> convertToMenuInfo(JsonNode jsonNode) {
         try {
             List<MenuInfo> info = OBJECT_MAPPER.readValue(OBJECT_MAPPER.treeAsTokens(jsonNode),
-                                                          new TypeReference<List<MenuInfo>>(){});
+                                                          new TypeReference<Collection<MenuInfo>>(){});
             return info.stream().collect(Collectors.toMap(MenuInfo::getTitle, Function.identity()));
         } catch (IOException e) {
             logger.error("Converting Json to MenuInfo Map Failed", e);
