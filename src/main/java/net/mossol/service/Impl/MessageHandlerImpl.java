@@ -1,5 +1,13 @@
 package net.mossol.service.Impl;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import net.mossol.HttpConnection;
 import net.mossol.MossolUtil;
 import net.mossol.model.LineReplyRequest;
@@ -9,16 +17,6 @@ import net.mossol.service.MenuServiceHandler;
 import net.mossol.service.MenuServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
 import net.mossol.util.MessageBuildUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javafx.util.Pair;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -40,9 +38,8 @@ public class MessageHandlerImpl implements MessageHandler {
     private MenuServiceHandler menuServiceHandler;
 
     private boolean sendFoodRequest(String token, FoodType foodType) {
-        Pair<String, MenuInfo> todayMenu = menuServiceHandler.selectMenu(foodType);
-        return sendRequest(REPLY_URI,
-                           MessageBuildUtil.sendFoodMessage(token, todayMenu.getKey(), todayMenu.getValue()));
+        MenuInfo menu = menuServiceHandler.selectMenu(foodType);
+        return sendRequest(REPLY_URI, MessageBuildUtil.sendFoodMessage(token, menu));
     }
 
     private static boolean sendRequest(String uri, Object request) {

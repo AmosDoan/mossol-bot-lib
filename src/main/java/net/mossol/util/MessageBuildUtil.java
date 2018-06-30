@@ -9,6 +9,7 @@ public final class MessageBuildUtil {
 
     private static final String NO_LOCATION = "멍멍! 등록된 위치 정보가 없어요 ㅜ";
     private static final String EXIST_LOCATION = "멍멍! 등록된 위치 정보가 있어요!";
+    private static final String SELECT_MENU = "멍멍 %s 안먹으면 가서 깨뭅니다";
 
     private MessageBuildUtil() {
 
@@ -40,7 +41,9 @@ public final class MessageBuildUtil {
         return replyRequest;
     }
 
-    public static LineReplyRequest sendFoodMessage(String token, String content, MenuInfo menuInfo) {
+    public static LineReplyRequest sendFoodMessage(String token, MenuInfo menuInfo) {
+        final String content = String.format(SELECT_MENU, menuInfo.getTitle());
+
         LineReplyRequest replyRequest = new LineReplyRequest(token);
         replyRequest.setMessage(buildTextMessage(content));
         if (Double.compare(menuInfo.getLatitude(), -1) == 0 &&
