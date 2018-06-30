@@ -1,7 +1,6 @@
 package net.mossol.service.Impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -18,17 +18,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.mossol.context.MenuContextUtil;
-import net.mossol.model.LocationInfo;
-import net.mossol.service.LunchServiceHandler;
+import net.mossol.model.MenuInfo;
+import net.mossol.service.MenuServiceHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
+
+import javafx.util.Pair;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
 @Service
-public class LunchServiceHandlerImpl implements LunchServiceHandler {
-    private static final Logger logger = LoggerFactory.getLogger(LunchServiceHandlerImpl.class);
+public class MenuServiceHandlerImpl implements MenuServiceHandler {
+    private static final Logger logger = LoggerFactory.getLogger(MenuServiceHandlerImpl.class);
     private static final String menuFormat = "메뉴 리스트는 다음과 같아요 멍\n%s";
     private static final String selectFormat = "멍멍 %s 안먹으면 가서 깨뭅니다";
     private static final String addFormat = "멍멍 %s 추가합니다";
@@ -37,31 +39,33 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     private static final String alreadyExistMenu = "멍멍 이미 있는 곳이에요";
     private static final String addFail = "왈왈! 추가 실패!!";
 
-    private volatile Set<String> koreaMenu;
-    private volatile Set<String> japanMenu;
-    private volatile Set<String> drinkMenu;
-    private volatile Map<String, LocationInfo> locationInfo;
+    private volatile Map<String, MenuInfo> koreaMenu;
+    private volatile Map<String, MenuInfo> japanMenu;
+    private volatile Map<String, MenuInfo> drinkMenu;
 
-    private static final Set<String> drinkDefaultCandidate =
-        new HashSet<>(Arrays.asList("사랑애수산", "더블린"));
-    private static final Set<String> koreaDefaultCandidate =
+    private static final Map<String, MenuInfo> drinkDefaultCandidate =
+        new HashSet<>(Arrays.asList("사랑애수산", "더블린"))
+            .stream()
+            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
+    private static final Map<String, MenuInfo> koreaDefaultCandidate =
         new HashSet<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비", "버거킹", "숯불정식", "돈돈정",
                                     "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
-                                    "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜", "화수목"));
-    private static final Set<String> japanDefaultCandidate =
-        new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"));
+                                    "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜", "화수목"))
+            .stream()
+            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
+    private static final Map<String, MenuInfo> japanDefaultCandidate =
+        new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"))
+            .stream()
+            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
 
     @Autowired
-    private Watcher<Set<String>> japanMenuWatcher;
+    private Watcher<Map<String, MenuInfo>> japanMenuWatcher;
 
     @Autowired
-    private Watcher<Set<String>> koreaMenuWatcher;
+    private Watcher<Map<String, MenuInfo>> koreaMenuWatcher;
 
     @Autowired
-    private Watcher<Set<String>> drinkMenuWatcher;
-
-    @Autowired
-    private Watcher<Map<String, LocationInfo>> locationInfoWatcher;
+    private Watcher<Map<String, MenuInfo>> drinkMenuWatcher;
 
     private final Random random = new Random();
 
@@ -69,7 +73,6 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     private void init() throws InterruptedException {
         japanMenu = japanDefaultCandidate;
         koreaMenu = koreaDefaultCandidate;
-        locationInfo = Collections.emptyMap();
 
         japanMenuWatcher.watch((revision, menu) -> {
             if (menu == null)  {
@@ -115,24 +118,9 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         } catch (TimeoutException e) {
             logger.error("Failed fetch Drink Menu from Central Dogma; Set the Default Menu", e);
         }
-
-        locationInfoWatcher.watch((revision, info) -> {
-            if (info == null)  {
-                logger.warn("Location info Watch Failed");
-                return;
-            }
-            logger.info("Location Info Updated : " + info);
-            locationInfo = info;
-        });
-
-        try {
-            locationInfoWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            logger.error("Failed location info from Central Dogma; Set the empty map", e);
-        }
     }
 
-    private Set<String> selectMenuType(FoodType type) {
+    private Map<String, MenuInfo> selectMenuType(FoodType type) {
         switch (type) {
             case JAPAN_FOOD:
                 return japanMenu;
@@ -148,33 +136,28 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
     @Override
     public String getMenu(FoodType type) {
         logger.debug("getMenu");
-        Set<String> menu = selectMenuType(type);
+        Set<String> menu = selectMenuType(type).entrySet().stream().map(e -> e.getValue().getTitle())
+                                               .collect(Collectors.toSet());
         String msg = String.format(menuFormat, String.join("\n", menu));
         logger.debug("DEBUG : {}", msg);
         return msg;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public String selectMenu(FoodType type) {
+    public Pair<String, MenuInfo> selectMenu(FoodType type) {
         logger.debug("selectMenu");
-        Set<String> menu = selectMenuType(type);
+        Map<String, MenuInfo> menu = selectMenuType(type);
         int idx = (random.nextInt() & Integer.MAX_VALUE)% menu.size();
 
-        Iterator<String> iterator = menu.iterator();
+        Iterator<String> iterator = menu.keySet().iterator();
         for (int i = 0; i < idx + 1; i ++) {
             iterator.next();
         }
 
         String select = iterator.next();
         logger.debug("Selected Menu : {}", select);
-        return select;
-    }
-
-    @Override
-    public String getSelectedMenuFormat(String food) {
-        String msg = String.format(selectFormat, food);
-        logger.debug("DEBUG : {}", msg);
-        return msg;
+        return new Pair(String.format(selectFormat, select), menu.get(select));
     }
 
     @Override
@@ -184,12 +167,12 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
             return addFail;
         }
 
-        Set<String> menu = selectMenuType(type);
-        if (menu.contains(food)) {
+        Map<String, MenuInfo> menu = selectMenuType(type);
+        if (menu.containsKey(food)) {
             return alreadyExistMenu;
         }
 
-        menu.add(food);
+        menu.put(food, new MenuInfo(food, -1, -1));
         String msg = String.format(addFormat, food);
         logger.debug("DEBUG : {}", msg);
 
@@ -205,8 +188,8 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
             return removeFail;
         }
 
-        Set<String> menu = selectMenuType(type);
-        if (!menu.contains(food)) {
+        Map<String, MenuInfo> menu = selectMenuType(type);
+        if (!menu.containsKey(food)) {
             return removeFail;
         }
 
@@ -217,10 +200,5 @@ public class LunchServiceHandlerImpl implements LunchServiceHandler {
         MenuContextUtil.updateMenu(menu, type);
 
         return msg;
-    }
-
-    @Override
-    public LocationInfo getLocationInfo(String food) {
-        return locationInfo.getOrDefault(food, null);
     }
 }
