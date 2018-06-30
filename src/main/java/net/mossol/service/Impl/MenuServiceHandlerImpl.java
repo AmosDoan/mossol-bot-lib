@@ -39,12 +39,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
     private volatile Map<String, MenuInfo> koreaMenu;
     private volatile Map<String, MenuInfo> japanMenu;
-    private volatile Map<String, MenuInfo> drinkMenu;
 
-    private static final Map<String, MenuInfo> drinkDefaultCandidate =
-        new HashSet<>(Arrays.asList("사랑애수산", "더블린"))
-            .stream()
-            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
     private static final Map<String, MenuInfo> koreaDefaultCandidate =
         new HashSet<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비", "버거킹", "숯불정식", "돈돈정",
                                     "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
@@ -61,9 +56,6 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
     @Autowired
     private Watcher<Map<String, MenuInfo>> koreaMenuWatcher;
-
-    @Autowired
-    private Watcher<Map<String, MenuInfo>> drinkMenuWatcher;
 
     private final Random random = new Random();
 
@@ -97,24 +89,9 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         });
 
         try {
-            koreaMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+            koreaMenuWatcher.awaitInitialValue(10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu", e);
-        }
-
-        drinkMenuWatcher.watch((revision, menu) -> {
-            if (menu == null)  {
-                logger.warn("Drink Menu Watch Failed");
-                return;
-            }
-            logger.info("Drink Menu Updated : " + menu);
-            drinkMenu = menu;
-        });
-
-        try {
-            drinkMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            logger.error("Failed fetch Drink Menu from Central Dogma; Set the Default Menu", e);
         }
     }
 
@@ -125,7 +102,6 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             case KOREA_FOOD:
                 return koreaMenu;
             case DRINK_FOOD:
-                return drinkMenu;
             default:
                 return koreaMenu;
         }
@@ -146,10 +122,11 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     public MenuInfo selectMenu(FoodType type) {
         logger.debug("selectMenu");
         Map<String, MenuInfo> menu = selectMenuType(type);
-        int idx = (random.nextInt() & Integer.MAX_VALUE)% menu.size();
+        int idx = (random.nextInt() & Integer.MAX_VALUE) % menu.size();
 
+        logger.debug("idx: {} Selected Menu : {}", idx, menu.keySet());
         Iterator<String> iterator = menu.keySet().iterator();
-        for (int i = 0; i < idx + 1; i ++) {
+        for (int i = 0; i < idx; i++) {
             iterator.next();
         }
 
