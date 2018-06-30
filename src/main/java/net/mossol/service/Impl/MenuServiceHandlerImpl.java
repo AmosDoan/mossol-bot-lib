@@ -23,8 +23,6 @@ import net.mossol.service.MenuServiceHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
 
-import javafx.util.Pair;
-
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
@@ -32,7 +30,7 @@ import javafx.util.Pair;
 public class MenuServiceHandlerImpl implements MenuServiceHandler {
     private static final Logger logger = LoggerFactory.getLogger(MenuServiceHandlerImpl.class);
     private static final String menuFormat = "메뉴 리스트는 다음과 같아요 멍\n%s";
-    private static final String selectFormat = "멍멍 %s 안먹으면 가서 깨뭅니다";
+
     private static final String addFormat = "멍멍 %s 추가합니다";
     private static final String removeFormat = "멍멍 %s 가지마세요! 가면 깨뭅니다";
     private static final String removeFail = "멍멍 그런 메뉴 없어요";
@@ -145,7 +143,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Pair<String, MenuInfo> selectMenu(FoodType type) {
+    public MenuInfo selectMenu(FoodType type) {
         logger.debug("selectMenu");
         Map<String, MenuInfo> menu = selectMenuType(type);
         int idx = (random.nextInt() & Integer.MAX_VALUE)% menu.size();
@@ -157,7 +155,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
         String select = iterator.next();
         logger.debug("Selected Menu : {}", select);
-        return new Pair(String.format(selectFormat, select), menu.get(select));
+        return menu.get(select);
     }
 
     @Override

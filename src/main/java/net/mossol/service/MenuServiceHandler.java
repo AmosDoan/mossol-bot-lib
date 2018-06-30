@@ -2,8 +2,6 @@ package net.mossol.service;
 
 import net.mossol.model.MenuInfo;
 
-import javafx.util.Pair;
-
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
@@ -16,7 +14,7 @@ public interface MenuServiceHandler {
     }
 
     String getMenu(FoodType type);
-    Pair<String, MenuInfo> selectMenu(FoodType type);
+    MenuInfo selectMenu(FoodType type);
     String addMenu(String food, FoodType type);
     String removeMenu(String food, FoodType type);
 }
