@@ -8,7 +8,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 /**
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "net.mossol"})
 public class Application extends SpringBootServletInitializer {
 
     @Override

@@ -34,13 +34,6 @@ public final class MessageBuildUtil {
         return replyRequest;
     }
 
-    public static LineReplyRequest sendLocationMessage(String token, String title,
-                                                       String address, double latitude, double longitude) {
-        LineReplyRequest replyRequest = new LineReplyRequest(token);
-        replyRequest.setMessage(buildLocationMessage(title, address, latitude, longitude));
-        return replyRequest;
-    }
-
     public static LineReplyRequest sendFoodMessage(String token, MenuInfo menuInfo) {
         final String content = String.format(SELECT_MENU, menuInfo.getTitle());
 
@@ -56,5 +49,9 @@ public final class MessageBuildUtil {
                                                          menuInfo.getLatitude(), menuInfo.getLongitude()));
         }
         return replyRequest;
+    }
+
+    public static String sendFoodMessage(MenuInfo menuInfo) {
+        return String.format(SELECT_MENU, menuInfo.getTitle());
     }
 }
