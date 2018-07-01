@@ -95,12 +95,6 @@ public class MessageHandlerImpl implements MessageHandler {
                 return sendFoodRequest(token, FoodType.JAPAN_FOOD);
             } else if (message.equals("회식장소골라줘")) {
                 return sendFoodRequest(token, FoodType.DRINK_FOOD);
-            } else if (message.equals("테스트!@")) {
-                logger.debug("TEST");
-                LineReplyRequest locationRequest =
-                    MessageBuildUtil.sendLocationMessage(token, "우리집", "복정동 641번지",
-                                                         37.467185, 127.127161);
-                return sendRequest(REPLY_URI, locationRequest);
             } else if (message.equals("/집으로")) {
                 String groupId =  event.getSource().getGroupId();
                 String uri = String.format(LEAVE_URI, groupId);

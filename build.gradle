@@ -22,8 +22,6 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-
-
 repositories {
      maven { url "https://repo.spring.io/libs-release" }
      mavenCentral()
@@ -45,6 +43,8 @@ exclude(module: 'commons-logging')
     }
     providedCompile group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
     providedCompile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version:'1.5.8.RELEASE'
+    compile("me.ramswaroop.jbot:jbot:3.0.2")
+    providedCompile(group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1')
 }
 
 war {
