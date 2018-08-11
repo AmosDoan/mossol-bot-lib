@@ -1,27 +1,20 @@
 package net.mossol.service.Impl;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import com.linecorp.centraldogma.client.Watcher;
+import net.mossol.context.MenuContextUtil;
+import net.mossol.model.MenuInfo;
+import net.mossol.model.SimpleText;
+import net.mossol.service.MenuServiceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import net.mossol.context.MenuContextUtil;
-import net.mossol.model.MenuInfo;
-import net.mossol.service.MenuServiceHandler;
-
-import com.linecorp.centraldogma.client.Watcher;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -51,10 +44,10 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             .stream()
             .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
 
-    @Autowired
+    @Resource
     private Watcher<Map<String, MenuInfo>> japanMenuWatcher;
 
-    @Autowired
+    @Resource
     private Watcher<Map<String, MenuInfo>> koreaMenuWatcher;
 
     private final Random random = new Random();

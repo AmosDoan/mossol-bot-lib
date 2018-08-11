@@ -22,12 +22,8 @@ import com.linecorp.centraldogma.client.Watcher;
 import com.linecorp.centraldogma.common.Query;
 
 @Configuration
-public class MenuContextConfiguration {
+public class MenuContextConfiguration extends ContextConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(MenuContextConfiguration.class);
-    private static final CentralDogma centralDogma = CentralDogma.forHost("mossol.net");
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final String CENTRAL_DOGMA_PROJECT = "mossol";
-    private static final String CENTRAL_DOGMA_REPOSITORY = "main";
 
     private static Map<String, MenuInfo> convertToMenuInfo(JsonNode jsonNode) {
         try {
