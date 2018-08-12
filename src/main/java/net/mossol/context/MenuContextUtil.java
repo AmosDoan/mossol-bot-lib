@@ -1,9 +1,11 @@
 package net.mossol.context;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +31,8 @@ public final class MenuContextUtil {
 
     private static String convertToJsonNode(Map<String, MenuInfo> map) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(map);
+            List<MenuInfo> menuInfos = map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+            return OBJECT_MAPPER.writeValueAsString(menuInfos);
         } catch (IOException e) {
             logger.error("Converting Json to Map Failed");
             return null;
@@ -42,11 +45,17 @@ public final class MenuContextUtil {
             return;
         }
 
-        String jsonPath;
-        if (foodType == FoodType.JAPAN_FOOD) {
-            jsonPath = "/japanMenu.json";
-        } else {
-            jsonPath = "/koreaMenu.json";
+        String jsonPath = null;
+        switch(foodType) {
+            case KOREA_FOOD:
+                jsonPath = "/koreaMenu.json";
+                break;
+            case JAPAN_FOOD:
+                jsonPath = "/japanMenu.json";
+                break;
+            case DRINK_FOOD:
+                jsonPath = "/drinkMenu.json";
+                break;
         }
 
         CompletableFuture<Commit> future = null;
