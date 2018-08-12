@@ -1,11 +1,12 @@
 package net.mossol.service.Impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.linecorp.centraldogma.client.Watcher;
-import net.mossol.model.SimpleText;
+import net.mossol.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,6 @@ import org.springframework.stereotype.Service;
 
 import net.mossol.HttpConnection;
 import net.mossol.MossolUtil;
-import net.mossol.model.LineReplyRequest;
-import net.mossol.model.LineRequest;
-import net.mossol.model.MenuInfo;
 import net.mossol.service.MenuServiceHandler;
 import net.mossol.service.MenuServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
@@ -45,12 +43,16 @@ public class MessageHandlerImpl implements MessageHandler {
     private static final Pattern DRINK_REMOVE_PATTERN = Pattern.compile("(?<=^회식삭제\\s)(.+)");
 
     private volatile Map<String, SimpleText> simpleTextContext;
+    private volatile List<RegexText> regexTextContext;
 
     @Resource
     private MenuServiceHandler menuServiceHandler;
 
     @Resource
     private Watcher<Map<String, SimpleText>> simpleTextWatcher;
+
+    @Resource
+    private Watcher<List<RegexText>> regexTextWatcher;
 
     @PostConstruct
     private void init() throws InterruptedException {
@@ -61,6 +63,15 @@ public class MessageHandlerImpl implements MessageHandler {
             }
             logger.info("SimpleText Updated : " + context);
             simpleTextContext = context;
+        });
+
+        regexTextWatcher.watch((revision, context) -> {
+            if (context == null)  {
+                logger.warn("RegexText Watch Failed");
+                return;
+            }
+            logger.info("RegexText Updated : " + context);
+            regexTextContext = context;
         });
     }
 
@@ -73,6 +84,15 @@ public class MessageHandlerImpl implements MessageHandler {
         String payload = MossolUtil.writeJsonString(request);
         logger.debug("sendRequest Payload : {}", payload);
         return httpConnection.post(uri, payload);
+    }
+
+    private boolean regexTextHandle(LineRequest.Event event, String token, SimpleText simpleText) {
+        /*
+        for (RegexText text : regexTextContext) {
+
+        }
+        */
+        return true;
     }
 
     private boolean simpleTextHandle(LineRequest.Event event, String token, SimpleText simpleText) {
