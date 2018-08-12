@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.centraldogma.client.CentralDogma;
 import com.linecorp.centraldogma.client.Watcher;
 import com.linecorp.centraldogma.common.Query;
+import net.mossol.model.RegexText;
 import net.mossol.model.SimpleText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Configuration
-public class TextCentralDogmaConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(TextCentralDogmaConfiguration.class);
+public class TextContextConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(TextContextConfiguration.class);
     private static final String CENTRAL_DOGMA_PROJECT = "mossol";
     private static final String CENTRAL_DOGMA_REPOSITORY = "main";
 
@@ -31,8 +32,7 @@ public class TextCentralDogmaConfiguration {
     @Resource
     private ObjectMapper objectMapper;
 
-
-    private Map<String, SimpleText> convertToMenuInfo(JsonNode jsonNode) {
+    private Map<String, SimpleText> convertToSimpleText(JsonNode jsonNode) {
         try {
             List<SimpleText> info = objectMapper.readValue(objectMapper.treeAsTokens(jsonNode),
                     new TypeReference<List<SimpleText>>(){});
@@ -43,10 +43,28 @@ public class TextCentralDogmaConfiguration {
         }
     }
 
+    private List<RegexText> convertToRegexText(JsonNode jsonNode) {
+        try {
+            List<RegexText> regexTexts = objectMapper.readValue(objectMapper.treeAsTokens(jsonNode), new TypeReference<List<RegexText>>(){});
+            regexTexts = regexTexts.stream().map(RegexText::compilePattern).collect(Collectors.toList());
+            return regexTexts;
+        } catch (IOException e) {
+            logger.error("Converting Json to RegexText Map Failed", e);
+            return null;
+        }
+    }
+
     @Bean
     public Watcher<Map<String, SimpleText>> simpleTextWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
                 Query.ofJsonPath("/simpleText.json"),
-                this::convertToMenuInfo);
+                this::convertToSimpleText);
+    }
+
+    @Bean
+    public Watcher<List<RegexText>> regexTextWatcher() {
+        return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
+                Query.ofJsonPath("/regexText.json"),
+                this::convertToRegexText);
     }
 }

@@ -1,11 +1,12 @@
 package net.mossol.service.Impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.linecorp.centraldogma.client.Watcher;
-import net.mossol.model.SimpleText;
+import net.mossol.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,6 @@ import org.springframework.stereotype.Service;
 
 import net.mossol.HttpConnection;
 import net.mossol.MossolUtil;
-import net.mossol.model.LineReplyRequest;
-import net.mossol.model.LineRequest;
-import net.mossol.model.MenuInfo;
 import net.mossol.service.MenuServiceHandler;
 import net.mossol.service.MenuServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
@@ -37,20 +35,17 @@ public class MessageHandlerImpl implements MessageHandler {
     private static final String REPLY_URI = "https://api.line.me/v2/bot/message/reply";
     private static final String LEAVE_URI = "https://api.line.me/v2/bot/group/%s/leave";
     private static final HttpConnection httpConnection = new HttpConnection();
-    private static final Pattern ADD_PATTERN = Pattern.compile("(?<=^메뉴추가\\s)(.+$)");
-    private static final Pattern REMOVE_PATTERN = Pattern.compile("(?<=^메뉴삭제\\s)(.+)");
-    private static final Pattern JAPAN_ADD_PATTERN = Pattern.compile("(?<=^일본메뉴추가\\s)(.+$)");
-    private static final Pattern JAPAN_REMOVE_PATTERN = Pattern.compile("(?<=^일본메뉴삭제\\s)(.+$)");
-    private static final Pattern DRINK_ADD_PATTERN = Pattern.compile("(?<=^회식추가\\s)(.+$)");
-    private static final Pattern DRINK_REMOVE_PATTERN = Pattern.compile("(?<=^회식삭제\\s)(.+)");
-
     private volatile Map<String, SimpleText> simpleTextContext;
+    private volatile List<RegexText> regexTextContext;
 
     @Resource
     private MenuServiceHandler menuServiceHandler;
 
     @Resource
     private Watcher<Map<String, SimpleText>> simpleTextWatcher;
+
+    @Resource
+    private Watcher<List<RegexText>> regexTextWatcher;
 
     @PostConstruct
     private void init() throws InterruptedException {
@@ -61,6 +56,15 @@ public class MessageHandlerImpl implements MessageHandler {
             }
             logger.info("SimpleText Updated : " + context);
             simpleTextContext = context;
+        });
+
+        regexTextWatcher.watch((revision, context) -> {
+            if (context == null)  {
+                logger.warn("RegexText Watch Failed");
+                return;
+            }
+            logger.info("RegexText Updated : " + context);
+            regexTextContext = context;
         });
     }
 
@@ -73,6 +77,39 @@ public class MessageHandlerImpl implements MessageHandler {
         String payload = MossolUtil.writeJsonString(request);
         logger.debug("sendRequest Payload : {}", payload);
         return httpConnection.post(uri, payload);
+    }
+
+    private boolean regexTextHandle(String token, String message) {
+        for (RegexText regex : regexTextContext) {
+            String result = regex.match(message);
+            String addMenuResult;
+            if (!result.isEmpty()) {
+                logger.debug("Regex Matched : message{}, match{}", message, result);
+                switch (regex.getType()) {
+                    case ADD_MENU_K:
+                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.KOREA_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                    case ADD_MENU_J:
+                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.JAPAN_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                    case ADD_MENU_D:
+                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.DRINK_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                    case DEL_MENU_K:
+                        String removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.KOREA_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                    case DEL_MENU_J:
+                        removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.JAPAN_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                    case DEL_MENU_D:
+                        removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD);
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                    case TEXT:
+                        return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, regex.getResponse()));
+                }
+            }
+        }
+        return false;
     }
 
     private boolean simpleTextHandle(LineRequest.Event event, String token, SimpleText simpleText) {
@@ -112,46 +149,15 @@ public class MessageHandlerImpl implements MessageHandler {
         if (event.getType().equals("message")) {
             String token = event.getReplyToken();
             String message = event.getMessage().getText();
+            String simpleMessage = message.replaceAll("\\s+", "");
 
-            Matcher addMatcher = ADD_PATTERN.matcher(message);
-            Matcher removeMatcher = REMOVE_PATTERN.matcher(message);
-            Matcher japanAddMatcher = JAPAN_ADD_PATTERN.matcher(message);
-            Matcher japanRemoveMatcher = JAPAN_REMOVE_PATTERN.matcher(message);
-            Matcher drinkAddMatcher = DRINK_ADD_PATTERN.matcher(message);
-            Matcher drinkRemoveMatcher = DRINK_REMOVE_PATTERN.matcher(message);
-
-            message = message.replaceAll("\\s+", "");
-
-            SimpleText simpleText = simpleTextContext.get(message);
+            SimpleText simpleText = simpleTextContext.get(simpleMessage);
 
             if (simpleText != null) {
                 return simpleTextHandle(event, token, simpleText);
             }
 
-            if (message.contains("안녕")) {
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, "멍멍!!"));
-            } else if (addMatcher.find()) {
-                String addMenuResult = menuServiceHandler.addMenu(addMatcher.group(), FoodType.KOREA_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
-            } else if (removeMatcher.find()) {
-                String removeMenuResult = menuServiceHandler.removeMenu(removeMatcher.group(),
-                                                                        FoodType.KOREA_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
-            } else if (japanAddMatcher.find()) {
-                String addMenuResult = menuServiceHandler.addMenu(japanAddMatcher.group(), FoodType.JAPAN_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
-            } else if (japanRemoveMatcher.find()) {
-                String removeMenuResult = menuServiceHandler.removeMenu(japanRemoveMatcher.group(),
-                                                                        FoodType.JAPAN_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
-            } else if (drinkAddMatcher.find()) {
-                String addMenuResult = menuServiceHandler.addMenu(japanAddMatcher.group(), FoodType.DRINK_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, addMenuResult));
-            } else if (drinkRemoveMatcher.find()) {
-                String removeMenuResult = menuServiceHandler.removeMenu(japanRemoveMatcher.group(),
-                                                                        FoodType.DRINK_FOOD);
-                return sendRequest(REPLY_URI, MessageBuildUtil.sendTextMessage(token, removeMenuResult));
-            }
+            return regexTextHandle(token, message);
         } else if (event.getType().equals("join")) {
             String groupId =  event.getSource().getGroupId();
             logger.debug("Join the group {}", groupId);
