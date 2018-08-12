@@ -2,6 +2,7 @@ package net.mossol.model;
 
 import lombok.Data;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
@@ -24,5 +25,13 @@ public class RegexText {
     public RegexText compilePattern() {
         pattern = Pattern.compile(regex);
         return this;
+    }
+
+    public String match(String message) {
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
     }
 }
