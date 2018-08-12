@@ -1,9 +1,14 @@
 package net.mossol.service.Impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.linecorp.centraldogma.client.CentralDogma;
 import com.linecorp.centraldogma.client.Watcher;
-import net.mossol.context.MenuContextUtil;
+import com.linecorp.centraldogma.common.Author;
+import com.linecorp.centraldogma.common.Change;
+import com.linecorp.centraldogma.common.Commit;
+import com.linecorp.centraldogma.common.Revision;
+import com.linecorp.centraldogma.internal.thrift.CentralDogmaException;
 import net.mossol.model.MenuInfo;
-import net.mossol.model.SimpleText;
 import net.mossol.service.MenuServiceHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +16,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -33,16 +41,11 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     private volatile Map<String, MenuInfo> koreaMenu;
     private volatile Map<String, MenuInfo> japanMenu;
 
-    private static final Map<String, MenuInfo> koreaDefaultCandidate =
-        new HashSet<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비", "버거킹", "숯불정식", "돈돈정",
-                                    "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
-                                    "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜", "화수목"))
-            .stream()
-            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
-    private static final Map<String, MenuInfo> japanDefaultCandidate =
-        new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"))
-            .stream()
-            .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
+    @Resource
+    private CentralDogma centralDogma;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     @Resource
     private Watcher<Map<String, MenuInfo>> japanMenuWatcher;
@@ -51,6 +54,17 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     private Watcher<Map<String, MenuInfo>> koreaMenuWatcher;
 
     private final Random random = new Random();
+
+    private static final Map<String, MenuInfo> koreaDefaultCandidate =
+            new HashSet<>(Arrays.asList("부대찌개", "청담소반", "설렁탕", "카레", "닭갈비", "버거킹", "숯불정식", "돈돈정",
+                    "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
+                    "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜", "화수목"))
+                    .stream()
+                    .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
+    private static final Map<String, MenuInfo> japanDefaultCandidate =
+            new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"))
+                    .stream()
+                    .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
 
     @PostConstruct
     private void init() throws InterruptedException {
@@ -87,6 +101,58 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu", e);
         }
     }
+
+    private String convertToJsonNode(Map<String, MenuInfo> map) {
+        try {
+            List<MenuInfo> menuInfos = map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
+            return objectMapper.writeValueAsString(menuInfos);
+        } catch (IOException e) {
+            logger.error("Converting Json to Map Failed");
+            return null;
+        }
+    }
+
+    private void updateMenu(Map<String, MenuInfo> menu, FoodType foodType) {
+        String jsonMenu = convertToJsonNode(menu);
+        if (jsonMenu == null) {
+            return;
+        }
+
+        String jsonPath = null;
+        switch(foodType) {
+            case KOREA_FOOD:
+                jsonPath = "/koreaMenu.json";
+                break;
+            case JAPAN_FOOD:
+                jsonPath = "/japanMenu.json";
+                break;
+            case DRINK_FOOD:
+                jsonPath = "/drinkMenu.json";
+                break;
+        }
+
+        CompletableFuture<Commit> future = null;
+        try {
+            future =
+                    centralDogma.push("mossol", "main", Revision.HEAD,
+                            new Author("Mossol", "amos.doan@gmail.com"),
+                            "Add new Menu",
+                            Change.ofJsonUpsert(jsonPath, jsonMenu));
+        } catch (Exception e) {
+            logger.debug("Menu Update Failed : {} {} ", jsonPath, e);
+        }
+
+        try {
+            future.join();
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof CentralDogmaException) {
+                CentralDogmaException cde = (CentralDogmaException) cause;
+                logger.debug("Menu Update Failed : {} {} ", cde.getErrorCode(), cde.getMessage());
+            }
+        }
+    }
+
 
     private Map<String, MenuInfo> selectMenuType(FoodType type) {
         switch (type) {
@@ -144,7 +210,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         String msg = String.format(addFormat, food);
         logger.debug("DEBUG : {}", msg);
 
-        MenuContextUtil.updateMenu(menu, type);
+        updateMenu(menu, type);
 
         return msg;
     }
@@ -165,7 +231,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         String msg = String.format(removeFormat, food);
         logger.debug("DEBUG : {}", msg);
 
-        MenuContextUtil.updateMenu(menu, type);
+        updateMenu(menu, type);
 
         return msg;
     }

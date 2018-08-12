@@ -44,7 +44,7 @@ public class MessageHandlerImpl implements MessageHandler {
     private static final Pattern DRINK_ADD_PATTERN = Pattern.compile("(?<=^회식추가\\s)(.+$)");
     private static final Pattern DRINK_REMOVE_PATTERN = Pattern.compile("(?<=^회식삭제\\s)(.+)");
 
-    private Map<String, SimpleText> simpleTextContext;
+    private volatile Map<String, SimpleText> simpleTextContext;
 
     @Resource
     private MenuServiceHandler menuServiceHandler;
