@@ -39,7 +39,7 @@ public class HttpConnection {
 
             logger.debug("Token : {}", token);
             logger.debug("postRequest : {}", postRequest.toString());
-            logger.debug("Header : {}", postRequest.getAllHeaders());
+            logger.debug("Header : {}", (Object[]) postRequest.getAllHeaders());
             logger.debug("Entity : {}", postRequest.getEntity());
 
             HttpResponse httpResponse = httpClient.execute(postRequest);
