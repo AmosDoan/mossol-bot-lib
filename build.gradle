@@ -19,12 +19,12 @@ description = """"""
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+    options.encoding = 'UTF-8'
 }
 
 repositories {
-     maven { url "https://repo.spring.io/libs-release" }
-     mavenCentral()
+    maven { url "https://repo.spring.io/libs-release" }
+    mavenCentral()
 }
 dependencies {
     compile group: 'com.linecorp.armeria', name: 'armeria', version:'0.65.1'
@@ -32,14 +32,14 @@ dependencies {
     compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure', version:'0.65.1'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version:'1.5.8.RELEASE'
     compile(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5') {
-exclude(module: 'commons-logging')
+        exclude(module: 'commons-logging')
     }
     compile group: 'com.linecorp.centraldogma', name: 'centraldogma-client', version:'0.20.1'
     compile group: 'com.jayway.jsonpath', name: 'json-path', version:'2.0.0'
     runtime group: 'ch.qos.logback', name: 'logback-classic', version:'1.2.3'
     runtime group: 'org.slf4j', name: 'log4j-over-slf4j', version:'1.7.25'
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version:'1.5.8.RELEASE') {
-exclude(module: 'commons-logging')
+        exclude(module: 'commons-logging')
     }
     providedCompile group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
     providedCompile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version:'1.5.8.RELEASE'
