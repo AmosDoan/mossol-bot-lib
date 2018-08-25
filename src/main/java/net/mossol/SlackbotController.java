@@ -10,17 +10,18 @@ import net.mossol.service.MenuServiceHandler;
 import net.mossol.util.MessageBuildUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
+
+import javax.annotation.Resource;
 
 @Service
 public class SlackbotController extends Bot {
 
     private static final Logger logger = LoggerFactory.getLogger(SlackbotController.class);
 
-    @Autowired
+    @Resource
     private MenuServiceHandler menuServiceHandler;
 
     @Value("${slackBotToken}")

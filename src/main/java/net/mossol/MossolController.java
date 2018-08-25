@@ -1,32 +1,22 @@
 package net.mossol;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import net.mossol.model.LineRequest;
-import net.mossol.model.LineResponse;
-import net.mossol.service.MessageHandler;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
-import com.linecorp.armeria.server.annotation.Default;
-import com.linecorp.armeria.server.annotation.Get;
-import com.linecorp.armeria.server.annotation.Header;
-import com.linecorp.armeria.server.annotation.Param;
-import com.linecorp.armeria.server.annotation.Path;
-import com.linecorp.armeria.server.annotation.Post;
-import com.linecorp.armeria.server.annotation.RequestObject;
+import com.linecorp.armeria.server.annotation.*;
+import net.mossol.model.LineRequest;
+import net.mossol.model.LineResponse;
+import net.mossol.service.MessageHandler;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 11. 18..
@@ -39,7 +29,7 @@ public class MossolController {
 
     private final AtomicLong counter = new AtomicLong();
 
-    @Autowired
+    @Resource
     private MessageHandler messageHandler;
 
     private boolean validateHeader(String requestBody, String signature) {
