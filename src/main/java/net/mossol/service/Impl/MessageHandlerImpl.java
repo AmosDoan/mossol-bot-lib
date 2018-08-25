@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.linecorp.centraldogma.client.Watcher;
+import net.mossol.connection.RetrofitConnection;
 import net.mossol.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,9 @@ public class MessageHandlerImpl implements MessageHandler {
     @Resource
     private Watcher<List<RegexText>> regexTextWatcher;
 
+    @Resource
+    private RetrofitConnection retrofitConnection;
+
     @PostConstruct
     private void init() throws InterruptedException {
         simpleTextWatcher.watch((revision, context) -> {
@@ -73,10 +77,18 @@ public class MessageHandlerImpl implements MessageHandler {
         return sendRequest(REPLY_URI, MessageBuildUtil.sendFoodMessage(token, menu));
     }
 
-    private static boolean sendRequest(String uri, Object request) {
+    private boolean sendRequest(String uri, LineReplyRequest request) {
         String payload = MossolUtil.writeJsonString(request);
         logger.debug("sendRequest Payload : {}", payload);
-        return httpConnection.post(uri, payload);
+        //return httpConnection.post(uri, payload);
+        retrofitConnection.sendReply(request);
+        return true;
+    }
+
+    private boolean leaveRoom(String groupId) {
+        //return httpConnection.post(uri, payload);
+        retrofitConnection.leaveRoom(null, groupId);
+        return true;
     }
 
     private boolean regexTextHandle(String token, String message) {
@@ -136,7 +148,8 @@ public class MessageHandlerImpl implements MessageHandler {
             case LEAVE_ROOM:
                 String groupId =  event.getSource().getGroupId();
                 String uri = String.format(LEAVE_URI, groupId);
-                return sendRequest(uri, null);
+                //return sendRequest(uri, null);
+                return leaveRoom(groupId);
         }
         return false;
     }
