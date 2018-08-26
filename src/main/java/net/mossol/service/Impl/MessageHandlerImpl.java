@@ -1,23 +1,22 @@
 package net.mossol.service.Impl;
 
-import java.util.List;
-import java.util.Map;
-
 import com.linecorp.centraldogma.client.Watcher;
-import net.mossol.connection.RetrofitConnection;
-import net.mossol.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import net.mossol.MossolUtil;
+import net.mossol.model.*;
 import net.mossol.service.MenuServiceHandler;
 import net.mossol.service.MenuServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
 import net.mossol.util.MessageBuildUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+
+import static net.mossol.model.TextType.*;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -25,8 +24,6 @@ import javax.annotation.Resource;
 @Service
 public class MessageHandlerImpl implements MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandlerImpl.class);
-    private static final String REPLY_URI = "https://api.line.me/v2/bot/message/reply";
-    private static final String LEAVE_URI = "https://api.line.me/v2/bot/group/%s/leave";
     private volatile Map<String, SimpleText> simpleTextContext;
     private volatile List<RegexText> regexTextContext;
 
@@ -38,9 +35,6 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Resource
     private Watcher<List<RegexText>> regexTextWatcher;
-
-    @Resource
-    private RetrofitConnection retrofitConnection;
 
     @PostConstruct
     private void init() throws InterruptedException {
@@ -63,106 +57,69 @@ public class MessageHandlerImpl implements MessageHandler {
         });
     }
 
-    private boolean sendFoodRequest(String token, FoodType foodType) {
-        MenuInfo menu = menuServiceHandler.selectMenu(foodType);
-        return sendRequest(MessageBuildUtil.sendFoodMessage(token, menu));
-    }
-
-    private boolean sendRequest(LineReplyRequest request) {
-        String payload = MossolUtil.writeJsonString(request);
-        logger.debug("sendRequest Payload : {}", payload);
-        retrofitConnection.sendReply(request);
-        return true;
-    }
-
-    private boolean leaveRoom(String groupId) {
-        retrofitConnection.leaveRoom(null, groupId);
-        return true;
-    }
-
-    private boolean regexTextHandle(String token, String message) {
+    private ReplyMessage regexTextHandle(String message) throws Exception {
         for (RegexText regex : regexTextContext) {
             String result = regex.match(message);
-            String addMenuResult;
             if (!result.isEmpty()) {
                 logger.debug("Regex Matched : message{}, match{}", message, result);
                 switch (regex.getType()) {
                     case ADD_MENU_K:
-                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.KOREA_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                        return new ReplyMessage(ADD_MENU_K, null,
+                                menuServiceHandler.addMenu(result, FoodType.KOREA_FOOD));
                     case ADD_MENU_J:
-                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.JAPAN_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                        return new ReplyMessage(ADD_MENU_J, null,
+                                menuServiceHandler.addMenu(result, FoodType.JAPAN_FOOD));
                     case ADD_MENU_D:
-                        addMenuResult = menuServiceHandler.addMenu(result, FoodType.DRINK_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, addMenuResult));
+                        return new ReplyMessage(ADD_MENU_D, null,
+                                menuServiceHandler.addMenu(result, FoodType.DRINK_FOOD));
                     case DEL_MENU_K:
-                        String removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.KOREA_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                        return new ReplyMessage(DEL_MENU_K, null,
+                                menuServiceHandler.removeMenu(result, FoodType.KOREA_FOOD));
                     case DEL_MENU_J:
-                        removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.JAPAN_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                        return new ReplyMessage(DEL_MENU_J, null,
+                                menuServiceHandler.removeMenu(result, FoodType.JAPAN_FOOD));
                     case DEL_MENU_D:
-                        removeMenuResult = menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD);
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, removeMenuResult));
+                        return new ReplyMessage(DEL_MENU_D, null,
+                                menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD));
                     case TEXT:
-                        return sendRequest(MessageBuildUtil.sendTextMessage(token, regex.getResponse()));
+                        return new ReplyMessage(TEXT, null, regex.getResponse());
                 }
             }
         }
-        return false;
+        throw new Exception("Invalid RegexText Type Message : " + message);
     }
 
-    private boolean simpleTextHandle(LineRequest.Event event, String token, SimpleText simpleText) {
-        String menuCandidate;
+    private ReplyMessage simpleTextHandle(SimpleText simpleText) throws Exception {
         switch (simpleText.getType()) {
             case SHOW_MENU_K:
-                menuCandidate = menuServiceHandler.getMenu(FoodType.KOREA_FOOD);
-                return sendRequest(MessageBuildUtil.sendTextMessage(token, menuCandidate));
+                return new ReplyMessage(SHOW_MENU_K, null, menuServiceHandler.getMenu(FoodType.KOREA_FOOD));
             case SHOW_MENU_J:
-                menuCandidate = menuServiceHandler.getMenu(FoodType.JAPAN_FOOD);
-                return sendRequest(MessageBuildUtil.sendTextMessage(token, menuCandidate));
+                return new ReplyMessage(SHOW_MENU_J, null, menuServiceHandler.getMenu(FoodType.JAPAN_FOOD));
             case SHOW_MENU_D:
-                menuCandidate = menuServiceHandler.getMenu(FoodType.DRINK_FOOD);
-                return sendRequest(MessageBuildUtil.sendTextMessage(token, menuCandidate));
+                return new ReplyMessage(SHOW_MENU_D, null, menuServiceHandler.getMenu(FoodType.DRINK_FOOD));
             case TEXT:
-                return sendRequest(MessageBuildUtil.sendTextMessage(token, simpleText.getResponse()));
+                return new ReplyMessage(TEXT, null, simpleText.getResponse());
             case SELECT_MENU_K:
-                return sendFoodRequest(token, FoodType.KOREA_FOOD);
+                return new ReplyMessage(SELECT_MENU_K, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
             case SELECT_MENU_J:
-                return sendFoodRequest(token, FoodType.JAPAN_FOOD);
+                return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
             case SELECT_MENU_D:
-                return sendFoodRequest(token, FoodType.DRINK_FOOD);
+                return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
             case LEAVE_ROOM:
-                String groupId =  event.getSource().getGroupId();
-                return leaveRoom(groupId);
+                return new ReplyMessage(LEAVE_ROOM, null, null);
         }
-        return false;
+        throw new Exception("Invalid SimpleText Type");
     }
 
     @Override
-    public boolean replyMessage(LineRequest request) throws Exception {
-        logger.debug("Logging : replyMessage {}", request);
-        LineRequest.Event event =  request.getEvents().get(0);
+    public ReplyMessage replyMessage(String requestMessage) throws Exception {
+        final String simpleMessage = requestMessage.replaceAll("\\s+", "");
+        final SimpleText simpleText = simpleTextContext.get(simpleMessage);
 
-        if (event.getType().equals("message")) {
-            String token = event.getReplyToken();
-            String message = event.getMessage().getText();
-            String simpleMessage = message.replaceAll("\\s+", "");
-
-            SimpleText simpleText = simpleTextContext.get(simpleMessage);
-
-            if (simpleText != null) {
-                return simpleTextHandle(event, token, simpleText);
-            }
-
-            return regexTextHandle(token, message);
-        } else if (event.getType().equals("join")) {
-            String groupId =  event.getSource().getGroupId();
-            logger.debug("Join the group {}", groupId);
-            return true;
+        if (simpleText != null) {
+            return simpleTextHandle(simpleText);
         }
 
-        return false;
+        return regexTextHandle(requestMessage);
     }
 }

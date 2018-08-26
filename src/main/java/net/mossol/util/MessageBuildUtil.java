@@ -12,7 +12,6 @@ public final class MessageBuildUtil {
     private static final String SELECT_MENU = "멍멍 %s 안먹으면 가서 깨뭅니다";
 
     private MessageBuildUtil() {
-
     }
 
     private static TextMessage buildTextMessage(String content) {
