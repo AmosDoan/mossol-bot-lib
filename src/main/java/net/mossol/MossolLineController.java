@@ -5,9 +5,10 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
 import com.linecorp.armeria.server.annotation.*;
-import net.mossol.model.LineRequest;
-import net.mossol.model.LineResponse;
+import net.mossol.connection.RetrofitConnection;
+import net.mossol.model.*;
 import net.mossol.service.MessageHandler;
+import net.mossol.util.MessageBuildUtil;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
 @Service
-public class MossolController {
-    private static final Logger logger = LoggerFactory.getLogger(MossolController.class);
+public class MossolLineController {
+    private static final Logger logger = LoggerFactory.getLogger(MossolLineController.class);
     private static final String template = "%dth, Hello, %s!";
     private static final String SECRET_KEY = "49588e53b2c64f47a3fc84739e17b757";
 
@@ -31,6 +32,25 @@ public class MossolController {
 
     @Resource
     private MessageHandler messageHandler;
+
+    @Resource
+    private RetrofitConnection retrofitConnection;
+
+    private boolean sendFoodRequest(String token, MenuInfo menu) {
+        return sendRequest(MessageBuildUtil.sendFoodMessage(token, menu));
+    }
+
+    private boolean sendRequest(LineReplyRequest request) {
+        String payload = MossolUtil.writeJsonString(request);
+        logger.debug("sendRequest Payload : {}", payload);
+        retrofitConnection.sendReply(request);
+        return true;
+    }
+
+    private boolean leaveRoom(String groupId) {
+        retrofitConnection.leaveRoom(null, groupId);
+        return true;
+    }
 
     private boolean validateHeader(String requestBody, String signature) {
         try {
@@ -49,6 +69,40 @@ public class MossolController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private void handleMessage(LineRequest.Event event) throws Exception {
+        final String token = event.getReplyToken();
+        final String message = event.getMessage().getText();
+
+        ReplyMessage replyMessage = messageHandler.replyMessage(message);
+        TextType type = replyMessage.getType();
+
+        switch(type) {
+            case SHOW_MENU_K:
+            case SHOW_MENU_J:
+            case SHOW_MENU_D:
+            case ADD_MENU_K:
+            case ADD_MENU_J:
+            case ADD_MENU_D:
+            case DEL_MENU_K:
+            case DEL_MENU_J:
+            case DEL_MENU_D:
+            case TEXT:
+                sendRequest(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
+                return;
+            case SELECT_MENU_K:
+            case SELECT_MENU_J:
+            case SELECT_MENU_D:
+                sendFoodRequest(token, replyMessage.getMenuInfo());
+                return;
+            case LEAVE_ROOM:
+                String groupId =  event.getSource().getGroupId();
+                leaveRoom(groupId);
+                break;
+        }
+
+        throw new Exception("Send message failed");
     }
 
     @Get("/healthCheck")
@@ -74,7 +128,16 @@ public class MossolController {
         }
 
         try {
-            messageHandler.replyMessage(requestObj);
+            logger.debug("Logging : replyMessage {}", request);
+            LineRequest.Event event =  requestObj.getEvents().get(0);
+
+            if (event.getType().equals("message")) {
+                handleMessage(event);
+            } else if (event.getType().equals("join")) {
+                String groupId =  event.getSource().getGroupId();
+                logger.debug("Join the group {}", groupId);
+            }
+
         } catch (Exception ignore) {
             logger.debug("Exception occured in replyMessage", ignore);
         }

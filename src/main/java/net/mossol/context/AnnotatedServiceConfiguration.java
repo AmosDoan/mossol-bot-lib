@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import net.mossol.MossolController;
+import net.mossol.MossolLineController;
 
 import com.linecorp.armeria.spring.AnnotatedServiceRegistrationBean;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
@@ -14,13 +14,13 @@ import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 public class AnnotatedServiceConfiguration {
 
     @Resource
-    MossolController mossolController;
+    MossolLineController mossolLineController;
 
     @Bean
     public AnnotatedServiceRegistrationBean mossolHandler() {
         return new AnnotatedServiceRegistrationBean().setServiceName("MOSSOL")
                                                      .setPathPrefix("/")
-                                                     .setService(mossolController);
+                                                     .setService(mossolLineController);
     }
 
     @Bean
