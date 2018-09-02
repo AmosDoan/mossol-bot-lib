@@ -40,6 +40,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
     private volatile Map<String, MenuInfo> koreaMenu;
     private volatile Map<String, MenuInfo> japanMenu;
+    private volatile Map<String, MenuInfo> drinkMenu;
 
     @Resource
     private CentralDogma centralDogma;
@@ -53,6 +54,9 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     @Resource
     private Watcher<Map<String, MenuInfo>> koreaMenuWatcher;
 
+    @Resource
+    private Watcher<Map<String, MenuInfo>> drinkMenuWatcher;
+
     private final Random random = new Random();
 
     private static final Map<String, MenuInfo> koreaDefaultCandidate =
@@ -65,11 +69,16 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"))
                     .stream()
                     .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
+    private static final Map<String, MenuInfo> drinkDefaultCandidate =
+            new HashSet<>(Arrays.asList("하누비노"))
+                    .stream()
+                    .collect(Collectors.toMap(e -> e, e -> new MenuInfo(e, -1, -1)));
 
     @PostConstruct
     private void init() throws InterruptedException {
         japanMenu = japanDefaultCandidate;
         koreaMenu = koreaDefaultCandidate;
+        drinkMenu = drinkDefaultCandidate;
 
         japanMenuWatcher.watch((revision, menu) -> {
             if (menu == null)  {
@@ -96,9 +105,24 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         });
 
         try {
-            koreaMenuWatcher.awaitInitialValue(10, TimeUnit.SECONDS);
+            koreaMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu", e);
+        }
+
+        drinkMenuWatcher.watch((revision, menu) -> {
+            if (menu == null)  {
+                logger.warn("Drink Menu Watch Failed");
+                return;
+            }
+            logger.info("Drink Menu Updated : " + menu);
+            drinkMenu = menu;
+        });
+
+        try {
+            drinkMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            logger.error("Failed fetch Drink Menu from Central Dogma; Set the Default Menu", e);
         }
     }
 

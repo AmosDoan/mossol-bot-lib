@@ -102,9 +102,9 @@ public class MessageHandlerImpl implements MessageHandler {
             case SELECT_MENU_K:
                 return new ReplyMessage(SELECT_MENU_K, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
             case SELECT_MENU_J:
-                return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
+                return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(FoodType.JAPAN_FOOD), null);
             case SELECT_MENU_D:
-                return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
+                return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
             case LEAVE_ROOM:
                 return new ReplyMessage(LEAVE_ROOM, null, null);
         }
