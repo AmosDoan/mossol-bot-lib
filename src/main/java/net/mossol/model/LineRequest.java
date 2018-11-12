@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class LineRequest {
     private List<Event> events = new ArrayList<>();
+    private String destination;
 
     @Data
     public static class Event {
