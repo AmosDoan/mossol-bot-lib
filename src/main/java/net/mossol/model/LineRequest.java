@@ -5,10 +5,13 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 3..
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LineRequest {
     private List<Event> events = new ArrayList<>();
     private String destination;

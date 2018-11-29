@@ -76,6 +76,11 @@ public class MossolLineController {
         final String message = event.getMessage().getText();
 
         ReplyMessage replyMessage = messageHandler.replyMessage(message);
+        if (replyMessage == null) {
+            logger.debug("INFO: there is no matching reply message");
+            return;
+        }
+
         TextType type = replyMessage.getType();
 
         switch(type) {
