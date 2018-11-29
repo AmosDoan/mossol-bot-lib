@@ -1,23 +1,23 @@
 package net.mossol;
 
-import me.ramswaroop.jbot.core.slack.Bot;
-import me.ramswaroop.jbot.core.slack.Controller;
-import me.ramswaroop.jbot.core.slack.EventType;
-import me.ramswaroop.jbot.core.slack.models.Event;
-import me.ramswaroop.jbot.core.slack.models.Message;
-import net.mossol.model.MenuInfo;
-import net.mossol.model.ReplyMessage;
-import net.mossol.model.TextType;
-import net.mossol.service.MenuServiceHandler;
-import net.mossol.service.MessageHandler;
-import net.mossol.util.MessageBuildUtil;
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
-import javax.annotation.Resource;
+import net.mossol.model.ReplyMessage;
+import net.mossol.model.TextType;
+import net.mossol.service.MessageHandler;
+import net.mossol.util.MessageBuildUtil;
+
+import me.ramswaroop.jbot.core.common.Controller;
+import me.ramswaroop.jbot.core.common.EventType;
+import me.ramswaroop.jbot.core.slack.Bot;
+import me.ramswaroop.jbot.core.slack.models.Event;
+import me.ramswaroop.jbot.core.slack.models.Message;
 
 @Service
 public class MossolSlackController extends Bot {

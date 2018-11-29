@@ -1,22 +1,38 @@
 package net.mossol.service.Impl;
 
-import com.linecorp.centraldogma.client.Watcher;
-import net.mossol.MossolUtil;
-import net.mossol.model.*;
-import net.mossol.service.MenuServiceHandler;
-import net.mossol.service.MenuServiceHandler.FoodType;
-import net.mossol.service.MessageHandler;
-import net.mossol.util.MessageBuildUtil;
+import static net.mossol.model.TextType.ADD_MENU_D;
+import static net.mossol.model.TextType.ADD_MENU_J;
+import static net.mossol.model.TextType.ADD_MENU_K;
+import static net.mossol.model.TextType.DEL_MENU_D;
+import static net.mossol.model.TextType.DEL_MENU_J;
+import static net.mossol.model.TextType.DEL_MENU_K;
+import static net.mossol.model.TextType.LEAVE_ROOM;
+import static net.mossol.model.TextType.SELECT_MENU_D;
+import static net.mossol.model.TextType.SELECT_MENU_J;
+import static net.mossol.model.TextType.SELECT_MENU_K;
+import static net.mossol.model.TextType.SHOW_MENU_D;
+import static net.mossol.model.TextType.SHOW_MENU_J;
+import static net.mossol.model.TextType.SHOW_MENU_K;
+import static net.mossol.model.TextType.TEXT;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import net.mossol.model.RegexText;
+import net.mossol.model.ReplyMessage;
+import net.mossol.model.SimpleText;
+import net.mossol.service.MenuServiceHandler;
+import net.mossol.service.MenuServiceHandler.FoodType;
+import net.mossol.service.MessageHandler;
 
-import static net.mossol.model.TextType.*;
+import com.linecorp.centraldogma.client.Watcher;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -86,7 +102,8 @@ public class MessageHandlerImpl implements MessageHandler {
                 }
             }
         }
-        throw new Exception("Invalid RegexText Type Message : " + message);
+        logger.debug("There is no matched regex for the message : " + message);
+        return null;
     }
 
     private ReplyMessage simpleTextHandle(SimpleText simpleText) throws Exception {
@@ -108,6 +125,7 @@ public class MessageHandlerImpl implements MessageHandler {
             case LEAVE_ROOM:
                 return new ReplyMessage(LEAVE_ROOM, null, null);
         }
+
         throw new Exception("Invalid SimpleText Type");
     }
 
