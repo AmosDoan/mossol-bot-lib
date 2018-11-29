@@ -6,6 +6,7 @@ import static net.mossol.model.TextType.ADD_MENU_K;
 import static net.mossol.model.TextType.DEL_MENU_D;
 import static net.mossol.model.TextType.DEL_MENU_J;
 import static net.mossol.model.TextType.DEL_MENU_K;
+import static net.mossol.model.TextType.KEI_CS;
 import static net.mossol.model.TextType.LEAVE_ROOM;
 import static net.mossol.model.TextType.SELECT_MENU_D;
 import static net.mossol.model.TextType.SELECT_MENU_J;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import net.mossol.model.RegexText;
 import net.mossol.model.ReplyMessage;
 import net.mossol.model.SimpleText;
+import net.mossol.service.KeiServiceHandler;
 import net.mossol.service.MenuServiceHandler;
 import net.mossol.service.MenuServiceHandler.FoodType;
 import net.mossol.service.MessageHandler;
@@ -45,6 +47,9 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Resource
     private MenuServiceHandler menuServiceHandler;
+
+    @Resource
+    private KeiServiceHandler keiServiceHandler;
 
     @Resource
     private Watcher<Map<String, SimpleText>> simpleTextWatcher;
@@ -124,6 +129,8 @@ public class MessageHandlerImpl implements MessageHandler {
                 return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
             case LEAVE_ROOM:
                 return new ReplyMessage(LEAVE_ROOM, null, null);
+            case KEI_CS:
+                return new ReplyMessage(KEI_CS, null, keiServiceHandler.getCSLotto());
         }
 
         throw new Exception("Invalid SimpleText Type");

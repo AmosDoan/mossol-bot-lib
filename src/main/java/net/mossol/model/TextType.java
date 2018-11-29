@@ -14,5 +14,6 @@ public enum TextType {
     ADD_MENU_D,
     DEL_MENU_K,
     DEL_MENU_J,
-    DEL_MENU_D;
+    DEL_MENU_D,
+    KEI_CS
 }

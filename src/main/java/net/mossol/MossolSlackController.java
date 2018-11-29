@@ -42,6 +42,11 @@ public class MossolSlackController extends Bot {
 
     private void handleMessage(WebSocketSession session, Event event) throws Exception {
         ReplyMessage replyMessage = messageHandler.replyMessage(event.getText());
+        if (replyMessage == null) {
+            logger.debug("INFO: there is no matching reply message");
+            return;
+        }
+
         TextType type = replyMessage.getType();
 
         switch(type) {
@@ -55,6 +60,7 @@ public class MossolSlackController extends Bot {
             case DEL_MENU_J:
             case DEL_MENU_D:
             case TEXT:
+            case KEI_CS:
                 reply(session, event, new Message(replyMessage.getText()));
                 return;
             case SELECT_MENU_K:
