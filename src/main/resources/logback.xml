@@ -3,7 +3,7 @@
   <include resource="org/springframework/boot/logging/logback/defaults.xml" />
   <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
-  <property name="LOG_LOCATION" value="/volume1/logs" />
+  <property name="LOG_LOCATION" value="./" />
   <property name="LOG_FILE" value="${LOG_LOCATION}/mossol_webapp.log" />
   <property name="SLACK_LOG_FILE" value="${LOG_LOCATION}/mossol_slack_webapp.log" />
   <property name="DEBUG_LOG_FILE" value="${LOG_LOCATION}/mossol_debug_webapp.log" />
