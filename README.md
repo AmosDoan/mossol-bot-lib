@@ -1,4 +1,5 @@
 # LINE_BOT
+[![Build Status](https://travis-ci.org/AmosDoan/line_bot_mossol.svg?branch=master)](https://travis-ci.org/AmosDoan/line_bot_mossol)
 
 * 귀여운 메뉴 추천 BOT Mossol
 * Mossol이는 메뉴 결정장애가 있는 라인 직원들을 위해 태어났습니다 
