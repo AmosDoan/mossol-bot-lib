@@ -17,6 +17,9 @@ before_deploy:
 - chmod 600 /tmp/deploy_rsa
 - ssh-add /tmp/deploy_rsa
 
+addons:
+  ssh_known_hosts: mossol.net
+
 deploy:
   provider: script
   skip_cleanup: true
