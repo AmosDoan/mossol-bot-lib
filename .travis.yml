@@ -22,6 +22,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ssh -p 22223 amos_doan@mossol.net "mkdir ~/travis_test"
+  script: rsync -r -e "ssh -p 22223" --delete-after --quiet $TRAVIS_BUILD_DIR amos_doan@mossol.net:~/out
   on:
     branch: master
