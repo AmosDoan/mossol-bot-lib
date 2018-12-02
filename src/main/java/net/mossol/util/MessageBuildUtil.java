@@ -40,7 +40,6 @@ public final class MessageBuildUtil {
         replyRequest.setMessage(buildTextMessage(content));
         if (Double.compare(menuInfo.getLatitude(), -1) == 0 &&
             Double.compare(menuInfo.getLongitude(), -1) == 0) {
-            replyRequest.setMessage(buildTextMessage(content));
             replyRequest.setMessage(buildTextMessage(NO_LOCATION));
         } else {
             replyRequest.setMessage(buildTextMessage(EXIST_LOCATION));
