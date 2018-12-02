@@ -22,6 +22,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script:  ssh -p 22223 amos_doan@mossol.net "~/mossol/kill.sh" && rsync -r -e "ssh -p 22223" --delete-after --quiet $TRAVIS_BUILD_DIR/build/libs/* amos_doan@mossol.net:~/mossol/ && ssh -p 22223 amos_doan@mossol.net "bash --login -c '~/mossol/start.sh'"
+  script:  ssh -p 22223 amos_doan@mossol.net "~/mossol/kill.sh" && rsync -r -e "ssh -p 22223" --delete-after --quiet $TRAVIS_BUILD_DIR/build/libs/* amos_doan@mossol.net:~/mossol/ && ssh -p 22223 amos_doan@mossol.net "bash --login -c 'cd ~/mossol && ./start.sh'"
   on:
     branch: master
