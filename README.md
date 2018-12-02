@@ -1,4 +1,5 @@
-# LINE_BOT
+# LINE_BOT_MOSSOL
+* Build by TRAVIS CI
 [![Build Status](https://travis-ci.org/AmosDoan/line_bot_mossol.svg?branch=master)](https://travis-ci.org/AmosDoan/line_bot_mossol)
 
 * 귀여운 메뉴 추천 BOT Mossol
@@ -13,6 +14,10 @@
     * 메뉴삭제 [메뉴명] => 메뉴를 리스트에서 삭제합니다 
     * 일본메뉴추가 [메뉴명] => 메뉴를 일본 메뉴 리스트에 추가합니다
     * 일본메뉴삭제 [메뉴명] => 메뉴를 일본 메뉴 리스트에서 삭제합니다
+
+* Data 저장소
+    * Bot Mossol에서 사용되는 Data는 다음 Repo에서 관리됩니다.
+    * https://github.com/AmosDoan/line_bot_mossol_central_dogma
 
 # How to build
 
