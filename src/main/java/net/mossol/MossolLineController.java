@@ -12,6 +12,7 @@ import net.mossol.util.MessageBuildUtil;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +27,9 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MossolLineController {
     private static final Logger logger = LoggerFactory.getLogger(MossolLineController.class);
     private static final String template = "%dth, Hello, %s!";
-    private static final String SECRET_KEY = "49588e53b2c64f47a3fc84739e17b757";
+
+    @Value("${lineSecret}")
+    private String SECRET_KEY;
 
     private final AtomicLong counter = new AtomicLong();
 
