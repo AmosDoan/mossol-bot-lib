@@ -28,7 +28,7 @@ public class MossolLineController {
     private static final Logger logger = LoggerFactory.getLogger(MossolLineController.class);
     private static final String template = "%dth, Hello, %s!";
 
-    @Value("${lineSecret}")
+    @Value("${line.secret}")
     private String SECRET_KEY;
 
     private final AtomicLong counter = new AtomicLong();
