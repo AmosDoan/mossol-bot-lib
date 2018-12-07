@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 public class RetrofitConnectionImpl implements RetrofitConnection {
     private final static Logger logger = LoggerFactory.getLogger(RetrofitConnectionImpl.class);
 
-    @Value("${retrofit.token}")
+    @Value("${line.token}")
     private String token;
 
     @Resource
