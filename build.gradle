@@ -53,7 +53,7 @@ dependencies {
     providedCompile group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
 
     // Slack Bot
-    compile group: 'me.ramswaroop.jbot', name: 'jbot', version: '4.1.2-rc.1'
+    compile group: 'me.ramswaroop.jbot', name: 'jbot', version: '4.1.0'
     providedCompile(group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1')
 
     // Retrofit
