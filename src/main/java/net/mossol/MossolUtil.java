@@ -36,6 +36,4 @@ public final class MossolUtil {
             return null;
         }
     }
-
-
 }
