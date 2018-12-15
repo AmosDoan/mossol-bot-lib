@@ -58,7 +58,7 @@ public class MessageHandlerImpl implements MessageHandler {
     private Watcher<List<RegexText>> regexTextWatcher;
 
     @PostConstruct
-    private void init() throws InterruptedException {
+    private void init() {
         simpleTextWatcher.watch((revision, context) -> {
             if (context == null)  {
                 logger.warn("SimpleText Watch Failed");

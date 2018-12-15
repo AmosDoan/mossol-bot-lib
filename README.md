@@ -1,5 +1,4 @@
 # LINE_BOT_MOSSOL
-* Build by TRAVIS CI
 [![Build Status](https://travis-ci.org/AmosDoan/line_bot_mossol.svg?branch=master)](https://travis-ci.org/AmosDoan/line_bot_mossol)
 
 * 귀여운 메뉴 추천 BOT Mossol
