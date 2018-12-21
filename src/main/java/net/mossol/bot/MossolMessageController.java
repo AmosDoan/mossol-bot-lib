@@ -7,7 +7,6 @@ import com.linecorp.armeria.common.MediaType;
 import com.linecorp.armeria.server.annotation.Path;
 import com.linecorp.armeria.server.annotation.Post;
 import com.linecorp.armeria.server.annotation.RequestObject;
-import io.netty.util.internal.StringUtil;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
@@ -17,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class MossolMessageController {
                 throw new Exception();
             }
         } catch (Exception e) {
-            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, StringUtil.EMPTY_STRING);
+            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, Collections.emptyMap());
             logger.debug("httpResponse <{}>", httpResponse);
             return httpResponse;
         }
