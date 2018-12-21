@@ -134,6 +134,6 @@ public class MessageHandlerImpl implements MessageHandler {
             return simpleTextHandle(simpleText);
         }
 
-        return regexTextHandle(requestMessage);
+        return regexTextHandle(simpleMessage);
     }
 }
