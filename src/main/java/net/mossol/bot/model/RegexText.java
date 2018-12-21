@@ -2,6 +2,8 @@ package net.mossol.bot.model;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,11 +19,12 @@ public class RegexText {
         return this;
     }
 
-    public String match(String message) {
+    public List<String> match(String message) {
         Matcher matcher = pattern.matcher(message);
-        if (matcher.find()) {
-            return matcher.group();
+        List<String> results = new ArrayList<>();
+        while (matcher.find()) {
+            results.add(matcher.group());
         }
-        return "";
+        return results;
     }
 }

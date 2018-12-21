@@ -1,6 +1,7 @@
 package net.mossol.bot.service.Impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import net.mossol.bot.service.KeiServiceHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class KeiServiceHandlerImpl implements KeiServiceHandler {
@@ -53,6 +55,28 @@ public class KeiServiceHandlerImpl implements KeiServiceHandler {
     @Override
     public String getCSLotto() {
         final int index = (random.nextInt() & Integer.MAX_VALUE) % keiUnitMember.size();
-        return keiUnitMember.get(index);
+        return "멍멍! CS 부탁해요! : " + keiUnitMember.get(index);
+    }
+
+    @Override
+    public String getRandomMember(List<String> infoList) {
+        String memberList = infoList.get(0);
+        int count = Integer.valueOf(infoList.get(1));
+
+        List<String> members = Arrays.asList(memberList.split(","));
+
+        if (CollectionUtils.isEmpty(members)) {
+            return "멍멍! 멤버 리스트가 이상해요!";
+        }
+
+        if (count > members.size() || count <= 0) {
+            return "멍멍! 골라야하는 분들 수가 이상해yo!";
+        }
+
+        StringBuilder builder = new StringBuilder().append("멍멍!! ");
+        Collections.shuffle(members);
+
+        builder.append(members.subList(0, count));
+        return builder.toString();
     }
 }

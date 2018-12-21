@@ -1,21 +1,5 @@
 package net.mossol.bot.service.Impl;
 
-import static net.mossol.bot.model.TextType.ADD_MENU_D;
-import static net.mossol.bot.model.TextType.ADD_MENU_J;
-import static net.mossol.bot.model.TextType.ADD_MENU_K;
-import static net.mossol.bot.model.TextType.DEL_MENU_D;
-import static net.mossol.bot.model.TextType.DEL_MENU_J;
-import static net.mossol.bot.model.TextType.DEL_MENU_K;
-import static net.mossol.bot.model.TextType.KEI_CS;
-import static net.mossol.bot.model.TextType.LEAVE_ROOM;
-import static net.mossol.bot.model.TextType.SELECT_MENU_D;
-import static net.mossol.bot.model.TextType.SELECT_MENU_J;
-import static net.mossol.bot.model.TextType.SELECT_MENU_K;
-import static net.mossol.bot.model.TextType.SHOW_MENU_D;
-import static net.mossol.bot.model.TextType.SHOW_MENU_J;
-import static net.mossol.bot.model.TextType.SHOW_MENU_K;
-import static net.mossol.bot.model.TextType.TEXT;
-
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +19,9 @@ import net.mossol.bot.service.MenuServiceHandler.FoodType;
 import net.mossol.bot.service.MessageHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
+import org.springframework.util.CollectionUtils;
+
+import static net.mossol.bot.model.TextType.*;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -78,10 +65,10 @@ public class MessageHandlerImpl implements MessageHandler {
         });
     }
 
-    private ReplyMessage regexTextHandle(String message) throws Exception {
+    private ReplyMessage regexTextHandle(String message) {
         for (RegexText regex : regexTextContext) {
-            String result = regex.match(message);
-            if (!result.isEmpty()) {
+            List<String> result = regex.match(message);
+            if (!CollectionUtils.isEmpty(result)) {
                 logger.debug("Regex Matched : message{}, match{}", message, result);
                 switch (regex.getType()) {
                     case ADD_MENU_K:
@@ -102,6 +89,8 @@ public class MessageHandlerImpl implements MessageHandler {
                     case DEL_MENU_D:
                         return new ReplyMessage(DEL_MENU_D, null,
                                 menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD));
+                    case RANDOM_SELECT:
+                        return new ReplyMessage(RANDOM_SELECT, null, keiServiceHandler.getRandomMember(result));
                     case TEXT:
                         return new ReplyMessage(TEXT, null, regex.getResponse());
                 }
