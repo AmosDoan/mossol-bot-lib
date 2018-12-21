@@ -1,6 +1,6 @@
 package net.mossol.bot.connection;
 
-import net.mossol.bot.bot.model.LineReplyRequest;
+import net.mossol.bot.model.LineReplyRequest;
 import retrofit2.Response;
 import retrofit2.http.*;
 
