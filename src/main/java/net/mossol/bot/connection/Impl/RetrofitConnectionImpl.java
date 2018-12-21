@@ -1,6 +1,6 @@
 package net.mossol.bot.connection.Impl;
 
-import net.mossol.bot.bot.model.LineReplyRequest;
+import net.mossol.bot.model.LineReplyRequest;
 import net.mossol.bot.connection.RetrofitClient;
 import net.mossol.bot.connection.RetrofitConnection;
 import org.slf4j.Logger;
