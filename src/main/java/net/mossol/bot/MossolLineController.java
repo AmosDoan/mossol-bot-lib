@@ -87,18 +87,6 @@ public class MossolLineController {
         TextType type = replyMessage.getType();
 
         switch(type) {
-            case SHOW_MENU_K:
-            case SHOW_MENU_J:
-            case SHOW_MENU_D:
-            case ADD_MENU_K:
-            case ADD_MENU_J:
-            case ADD_MENU_D:
-            case DEL_MENU_K:
-            case DEL_MENU_J:
-            case DEL_MENU_D:
-            case TEXT:
-                sendRequest(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
-                return;
             case SELECT_MENU_K:
             case SELECT_MENU_J:
             case SELECT_MENU_D:
@@ -108,6 +96,9 @@ public class MossolLineController {
                 String groupId =  event.getSource().getGroupId();
                 leaveRoom(groupId);
                 break;
+            default:
+                sendRequest(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
+                return;
         }
 
         throw new Exception("Send message failed");
