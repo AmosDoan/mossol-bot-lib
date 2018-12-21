@@ -51,21 +51,6 @@ public class MossolMessageController {
 
         String response;
         switch(type) {
-            case SHOW_MENU_K:
-            case SHOW_MENU_J:
-            case SHOW_MENU_D:
-            case ADD_MENU_K:
-            case ADD_MENU_J:
-            case ADD_MENU_D:
-            case DEL_MENU_K:
-            case DEL_MENU_J:
-            case DEL_MENU_D:
-            case TEXT:
-            case KEI_CS:
-                ret.put("message", replyMessage.getText());
-                response = MossolUtil.writeJsonString(ret);
-                httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);
-                return httpResponse;
             case SELECT_MENU_K:
             case SELECT_MENU_J:
             case SELECT_MENU_D:
@@ -76,6 +61,11 @@ public class MossolMessageController {
                 return httpResponse;
             case LEAVE_ROOM:
                 break;
+            default:
+                ret.put("message", replyMessage.getText());
+                response = MossolUtil.writeJsonString(ret);
+                httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);
+                return httpResponse;
         }
 
         httpResponse = HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
