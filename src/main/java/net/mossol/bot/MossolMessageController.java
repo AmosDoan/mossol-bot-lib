@@ -42,7 +42,7 @@ public class MossolMessageController {
                 throw new Exception();
             }
         } catch (Exception e) {
-            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, Collections.emptyMap());
+            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, MossolUtil.writeJsonString(Collections.emptyMap()));
             logger.debug("httpResponse <{}>", httpResponse);
             return httpResponse;
         }
