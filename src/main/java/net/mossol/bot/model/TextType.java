@@ -15,5 +15,6 @@ public enum TextType {
     DEL_MENU_K,
     DEL_MENU_J,
     DEL_MENU_D,
-    KEI_CS
+    KEI_CS,
+    RANDOM_SELECT,
 }

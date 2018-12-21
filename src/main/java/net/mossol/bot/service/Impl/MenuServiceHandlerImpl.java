@@ -185,6 +185,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             case KOREA_FOOD:
                 return koreaMenu;
             case DRINK_FOOD:
+                return drinkMenu;
             default:
                 return koreaMenu;
         }
@@ -219,7 +220,9 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     }
 
     @Override
-    public String addMenu(String food, FoodType type) {
+    public String addMenu(List<String> foods, FoodType type) {
+        final String food = foods.get(0);
+
         logger.debug("addMenu : " + food);
         if (food.isEmpty()) {
             return addFail;
@@ -240,7 +243,9 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     }
 
     @Override
-    public String removeMenu(String food, FoodType type) {
+    public String removeMenu(List<String> foods, FoodType type) {
+        final String food = foods.get(0);
+
         logger.debug("remove Menu : " + food);
         if (food.isEmpty()) {
             return removeFail;
