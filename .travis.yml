@@ -9,8 +9,8 @@ cache:
   - "$HOME/.m2/repository"
   - "$HOME/.gradle"
 script: "./gradlew clean bootJar"
-addons:
-  ssh_known_hosts: $MOSSOL_DEPLOY_ADDRESS:$PORT
+install:
+  - ssh-keyscan -p ${PORT} ${MOSSOL_DEPLOY_ADDRESS} 2>&1 | tee -a ${TRAVIS_HOME}/.ssh/known_hosts
 before_deploy:
 - echo "Preparing for deployment"
 - cat ~/.ssh/known_hosts
@@ -22,6 +22,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script:  ssh -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "~/mossol/kill.sh" && rsync -r -e "ssh -p $PORT" --delete-after --quiet $TRAVIS_BUILD_DIR/build/libs/* $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS:~/mossol/ && ssh -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "bash --login -c 'cd ~/mossol && ./start.sh'"
+  script: ssh -q -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "~/mossol/kill.sh" && rsync -r -e "ssh -q -p $MOSSOL_RSYNC_PORT" --delete-after --quiet $TRAVIS_BUILD_DIR/build/libs/* $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS:~/mossol/ && ssh -q -p $PORT $MOSSOL_ACCOUNT@$MOSSOL_DEPLOY_ADDRESS "bash --login -c 'cd ~/mossol && ./start.sh'"
   on:
     branch: master
