@@ -25,7 +25,7 @@ import javax.annotation.Resource;
 @Configuration
 public class MenuContextConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(MenuContextConfiguration.class);
-    private static final String CENTRAL_DOGMA_PROJECT = "mossol";
+    private static final String CENTRAL_DOGMA_PROJECT = "mossol_menu";
     private static final String CENTRAL_DOGMA_REPOSITORY = "main";
 
     @Resource

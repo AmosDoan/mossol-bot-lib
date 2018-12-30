@@ -17,5 +17,5 @@ public interface RetrofitClient {
     @Headers(CONTENT_TYPE_JSON_UTF8)
     CompletableFuture<Response<Object>> leaveRoom(@Path("groupId") String groupId,
                                                   @Header("Authorization") String token,
-                                                  @Body LineReplyRequest request);
+                                                  @Body Object dummy);
 }

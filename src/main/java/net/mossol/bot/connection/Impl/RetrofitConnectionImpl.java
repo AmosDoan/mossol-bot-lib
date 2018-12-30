@@ -1,5 +1,7 @@
 package net.mossol.bot.connection.Impl;
 
+import java.util.Collections;
+
 import net.mossol.bot.model.LineReplyRequest;
 import net.mossol.bot.connection.RetrofitClient;
 import net.mossol.bot.connection.RetrofitConnection;
@@ -14,7 +16,7 @@ import javax.annotation.Resource;
 @Component
 @PropertySource("classpath:connection.properties")
 public class RetrofitConnectionImpl implements RetrofitConnection {
-    private final static Logger logger = LoggerFactory.getLogger(RetrofitConnectionImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RetrofitConnectionImpl.class);
 
     @Value("${line.token}")
     private String token;
@@ -27,30 +29,30 @@ public class RetrofitConnectionImpl implements RetrofitConnection {
         retrofitClient.sendReply("Bearer " + token, request).whenComplete(
                 (response , e) -> {
                     if (e != null) {
-                        logger.warn("Got exception from LINE Bot Server! reponse<{}>", response, e);
+                        logger.warn("Got exception from LINE Bot Server! response<{}>", response, e);
                     }
 
                     if (response.code() == 200) {
-                        logger.warn("Got success LINE Bot Server! request<{}>,reponse<{}>", request, response);
+                        logger.warn("Got success LINE Bot Server! request<{}>,response<{}>", request, response);
                     } else {
-                        logger.warn("Got fail LINE Bot Server! request<{}>,reponse<{}>", request, response);
+                        logger.warn("Got fail LINE Bot Server! request<{}>,response<{}>", request, response);
                     }
                 }
         );
     }
 
     public void leaveRoom(LineReplyRequest request, String groupId) {
-        retrofitClient.leaveRoom(groupId, "Bearer " + token, request).whenComplete(
+        retrofitClient.leaveRoom(groupId, "Bearer " + token, Collections.emptyMap()).whenComplete(
                 (response , e) -> {
                     if (e != null) {
-                        logger.warn("Got exception from LINE Bot Server! groupId<{}>,reponse<{}>", groupId, response, e);
+                        logger.warn("Got exception from LINE Bot Server! groupId<{}>,response<{}>", groupId, response, e);
                     }
 
                     if (response.code() == 200) {
-                        logger.warn("Got success LINE Bot Server! groupId<{}>,request<{}>,reponse<{}>", groupId, request,
+                        logger.warn("Got success LINE Bot Server! groupId<{}>,request<{}>,response<{}>", groupId, request,
                                 response);
                     } else {
-                        logger.warn("Got fail LINE Bot Server! groupId<{}>,request<{}>,reponse<{}>", groupId, request,
+                        logger.warn("Got fail LINE Bot Server! groupId<{}>,request<{}>,response<{}>", groupId, request,
                                 response);
                     }
                 }
