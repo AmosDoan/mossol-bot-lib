@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+  <property name="LOG_LOCATION" value="./" />
+  <property name="LOG_FILE" value="${LOG_LOCATION}/mossol_webapp.log" />
+  <property name="SLACK_LOG_FILE" value="${LOG_LOCATION}/mossol_slack_webapp.log" />
+  <property name="DEBUG_LOG_FILE" value="${LOG_LOCATION}/mossol_debug_webapp.log" />
+  <property name="ACCESS_LOG_FILE" value="${LOG_LOCATION}/mossol_access.log" />
+
+  <appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_FILE}.%d{yyyyMMdd}</fileNamePattern>
+      <maxHistory>24</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <charset>utf-8</charset>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE_ASYNC_APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE_APPENDER"/>
+    <queueSize>2048</queueSize>
+    <includeCallerData>true</includeCallerData>
+  </appender>
+
+  <appender name="SLACK_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${SLACK_LOG_FILE}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${SLACK_LOG_FILE}.%d{yyyyMMdd}</fileNamePattern>
+      <maxHistory>24</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <charset>utf-8</charset>
+      <pattern>${FILE_LOG_PATTERN}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SLACK_FILE_ASYNC_APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="SLACK_FILE_APPENDER"/>
+    <queueSize>2048</queueSize>
+    <includeCallerData>true</includeCallerData>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+    </layout>
+  </appender>
+
+  <appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${ACCESS_LOG_FILE}</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${ACCESS_LOG_FILE}.%d{yyyy-MM-dd-HH}</fileNamePattern>
+      <maxHistory>48</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <springProfile name="local">
+    <root level="INFO">
+      <appender-ref ref="STDOUT" />
+    </root>
+  </springProfile>
+
+  <springProfile name="beta">
+    <logger name="me.ramswaroop" level="DEBUG">
+      <appender-ref ref="SLACK_FILE_ASYNC_APPENDER" />
+      <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="net.mossol" level="DEBUG">
+      <appender-ref ref="FILE_APPENDER" />
+      <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="com.linecorp.armeria.logging.access" level="INFO" additivity="false">
+      <appender-ref ref="ACCESS"/>
+    </logger>
+  </springProfile>
+</configuration>
