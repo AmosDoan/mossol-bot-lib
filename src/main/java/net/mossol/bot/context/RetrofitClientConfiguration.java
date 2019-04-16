@@ -21,7 +21,6 @@ import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Configuration
-@PropertySource("classpath:connection.properties")
 public class RetrofitClientConfiguration {
 
     @Value("${retrofit.baseUrl}")

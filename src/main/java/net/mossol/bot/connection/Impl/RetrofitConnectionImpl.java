@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 @Component
-@PropertySource("classpath:connection.properties")
 public class RetrofitConnectionImpl implements RetrofitConnection {
     private static final Logger logger = LoggerFactory.getLogger(RetrofitConnectionImpl.class);
 
