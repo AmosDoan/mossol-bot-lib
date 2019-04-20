@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.1.4.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -25,6 +25,11 @@ repositories {
 }
 
 dependencies {
+    // import BOMs
+    implementation platform('org.springframework.boot:spring-boot-dependencies:2.1.4.RELEASE')
+    implementation platform('com.linecorp.armeria:armeria-bom:0.83.0')
+    implementation platform('com.linecorp.centraldogma:centraldogma-bom:0.38.0')
+
     // Spring-boot
     implementation('org.springframework.boot:spring-boot-starter-web')
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -33,36 +38,39 @@ dependencies {
     providedCompile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
 
     // Armeria
-    compile group: 'com.linecorp.armeria', name: 'armeria', version:'0.68.2'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter', version:'0.68.2'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure', version:'0.68.2'
-    compile group: 'com.linecorp.armeria', name: 'armeria-retrofit2', version:'0.68.2'
-    testCompile(group: 'com.linecorp.armeria', name: 'armeria-testing', version:'0.68.2')
+    implementation group: 'com.linecorp.armeria', name: 'armeria'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-retrofit2'
+    testImplementation(group: 'com.linecorp.armeria', name: 'armeria-testing')
 
     // Logging
     runtime group: 'org.slf4j', name: 'log4j-over-slf4j', version:'1.7.25'
     runtime group: 'ch.qos.logback', name: 'logback-classic', version:'1.2.3'
-    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5') {
+    implementation(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5') {
         exclude(module: 'commons-logging')
     }
 
     // Central Dogma
-    compile group: 'com.linecorp.centraldogma', name: 'centraldogma-client', version:'0.20.1'
-    compile group: 'com.jayway.jsonpath', name: 'json-path', version:'2.0.0'
-    providedCompile group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
+    implementation group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
+    implementation group: 'com.jayway.jsonpath', name: 'json-path', version:'2.0.0'
+
+    // Lombok
+    implementation group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
 
     // Slack Bot
-    compile group: 'me.ramswaroop.jbot', name: 'jbot', version: '4.1.0'
+    implementation group: 'me.ramswaroop.jbot', name: 'jbot', version: '4.1.0'
     providedCompile(group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1')
 
     // Retrofit
-    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.4.0'
-    compile group: 'com.squareup.retrofit2', name: 'adapter-java8', version: '2.4.0'
-    compile group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.4.0'
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.4.0'
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-java8', version: '2.4.0'
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.4.0'
 
     // SSL
-    compile group: 'org.eclipse.jetty', name: 'jetty-alpn-conscrypt-client', version: '9.4.11.v20180605'
-    testCompile group: 'org.wildfly.openssl', name: 'wildfly-openssl', version: '1.0.4.Final'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-alpn-conscrypt-client', version: '9.4.11.v20180605'
+    testImplementation group: 'org.wildfly.openssl', name: 'wildfly-openssl', version: '1.0.4.Final'
 }
 
 war {

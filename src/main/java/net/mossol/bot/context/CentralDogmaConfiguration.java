@@ -9,6 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 class CentralDogmaConfiguration {
+    /*
     @Value("${centraldogma.host}")
     private String host;
 
@@ -19,6 +20,7 @@ class CentralDogmaConfiguration {
     public CentralDogma centralDogma() {
         return CentralDogma.forHost(host, port);
     }
+    */
 
     @Bean
     public ObjectMapper objectMapper() {
