@@ -19,8 +19,8 @@ line:
 
 # central dogma
 centraldogma:
-  host: mossol.net
-  port: 7272
+  hosts:
+  - mossol.net:7373
 
 retrofit:
   baseUrl: https://api.line.me

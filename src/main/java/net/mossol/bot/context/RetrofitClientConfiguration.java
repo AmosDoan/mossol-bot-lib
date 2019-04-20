@@ -1,22 +1,23 @@
 package net.mossol.bot.context;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import net.mossol.bot.connection.RetrofitClient;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.linecorp.armeria.client.ClientFactory;
 import com.linecorp.armeria.client.ClientFactoryBuilder;
 import com.linecorp.armeria.client.retrofit2.ArmeriaRetrofitBuilder;
 import com.linecorp.armeria.client.retry.RetryStrategy;
 import com.linecorp.armeria.client.retry.RetryingHttpClientBuilder;
-import com.linecorp.armeria.common.HttpRequest;
-import com.linecorp.armeria.common.HttpResponse;
+
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import net.mossol.bot.connection.RetrofitClient;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -49,7 +50,7 @@ public class RetrofitClientConfiguration {
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
                 .withClientOptions((url, option) -> {
-                    option.decorator(HttpRequest.class, HttpResponse.class,
+                    option.decorator(
                             new RetryingHttpClientBuilder(RetryStrategy.onServerErrorStatus())
                                     .responseTimeoutMillisForEachAttempt(httpSocketTimeOutMills)
                                     .maxTotalAttempts(maxRetry)

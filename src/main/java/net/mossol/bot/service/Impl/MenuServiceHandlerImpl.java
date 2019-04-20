@@ -1,28 +1,37 @@
 package net.mossol.bot.service.Impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.linecorp.centraldogma.client.CentralDogma;
-import com.linecorp.centraldogma.client.Watcher;
-import com.linecorp.centraldogma.common.Author;
-import com.linecorp.centraldogma.common.Change;
-import com.linecorp.centraldogma.common.Commit;
-import com.linecorp.centraldogma.common.Revision;
-import com.linecorp.centraldogma.internal.thrift.CentralDogmaException;
-import net.mossol.bot.model.MenuInfo;
-import net.mossol.bot.service.MenuServiceHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import net.mossol.bot.model.MenuInfo;
+import net.mossol.bot.service.MenuServiceHandler;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.linecorp.centraldogma.client.CentralDogma;
+import com.linecorp.centraldogma.client.Watcher;
+import com.linecorp.centraldogma.common.Change;
+import com.linecorp.centraldogma.common.ChangeConflictException;
+import com.linecorp.centraldogma.common.PushResult;
+import com.linecorp.centraldogma.common.Revision;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
@@ -155,13 +164,12 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
                 break;
         }
 
-        CompletableFuture<Commit> future = null;
+        CompletableFuture<PushResult> future = null;
         try {
             future =
                     centralDogma.push("mossol", "main", Revision.HEAD,
-                            new Author("Mossol", "amos.doan@gmail.com"),
-                            "Add new Menu",
-                            Change.ofJsonUpsert(jsonPath, jsonMenu));
+                                      "Add new Menu",
+                                      Change.ofJsonUpsert(jsonPath, jsonMenu));
         } catch (Exception e) {
             logger.debug("Menu Update Failed : {} {} ", jsonPath, e);
         }
@@ -170,9 +178,9 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             future.join();
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof CentralDogmaException) {
-                CentralDogmaException cde = (CentralDogmaException) cause;
-                logger.debug("Menu Update Failed : {} {} ", cde.getErrorCode(), cde.getMessage());
+            if (cause instanceof ChangeConflictException) {
+                ChangeConflictException cde = (ChangeConflictException) cause;
+                logger.debug("Menu Update Failed : {} {} ", cde.getCause(), cde.getMessage());
             }
         }
     }
