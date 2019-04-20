@@ -115,6 +115,7 @@ public class MossolLineController {
     @Path("/line")
     public HttpResponse getLine(@Header("X-Line-Signature") String signature,
                                 @RequestObject JsonNode request) {
+        logger.info("Request from LINE {}", request);
         LineRequest requestObj = MossolUtil.readJsonString(request);
 
         if (requestObj == null) {

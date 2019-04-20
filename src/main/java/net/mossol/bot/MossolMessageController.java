@@ -34,7 +34,7 @@ public class MossolMessageController {
         final Map<String, String> ret = new HashMap<>();
         HttpResponse httpResponse;
 
-        logger.info("request from LINE {}", request);
+        logger.info("request {}", request);
 
         ReplyMessage replyMessage;
         try {
