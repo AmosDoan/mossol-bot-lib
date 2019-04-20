@@ -175,16 +175,13 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             logger.debug("Menu Update Failed : {} {} ", jsonPath, e);
         }
 
-        try {
-            PushResult result = future.join();
-            logger.info("Pushed a commit {} at {}", result.revision(), result.whenAsText());
-        } catch (CompletionException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof ChangeConflictException) {
-                ChangeConflictException cde = (ChangeConflictException) cause;
-                logger.debug("Menu Update Failed : {} {} ", cde.getCause(), cde.getMessage());
+        future.whenComplete((result, e) -> {
+            if (e != null) {
+                logger.debug("Menu Update Failed : {} {} ", e.getCause());
+                return;
             }
-        }
+            logger.info("Pushed a commit {} at {}", result.revision(), result.whenAsText());
+        });
     }
 
 
