@@ -168,7 +168,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         CompletableFuture<PushResult> future = null;
         try {
             future =
-                    centralDogma.push("mossol", "main", Revision.HEAD,
+                    centralDogma.push("mossol_menu", "main", Revision.HEAD,
                                       "Add new Menu",
                                       Change.ofJsonUpsert(jsonPath, jsonMenu));
         } catch (Exception e) {
