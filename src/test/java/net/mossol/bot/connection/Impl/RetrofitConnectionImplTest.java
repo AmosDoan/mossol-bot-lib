@@ -64,7 +64,7 @@ public class RetrofitConnectionImplTest {
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
                 .withClientOptions((url, option) -> {
-                    option.decorator(HttpRequest.class, HttpResponse.class,
+                    option.decorator(
                             new RetryingHttpClientBuilder(RetryStrategy.onServerErrorStatus())
                                     .responseTimeoutMillisForEachAttempt(5000)
                                     .maxTotalAttempts(3)

@@ -9,18 +9,6 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 class CentralDogmaConfiguration {
-    /*
-    @Value("${centraldogma.host}")
-    private String host;
-
-    @Value("${centraldogma.port}")
-    private int port;
-
-    @Bean
-    public CentralDogma centralDogma() {
-        return CentralDogma.forHost(host, port);
-    }
-    */
 
     @Bean
     public ObjectMapper objectMapper() {

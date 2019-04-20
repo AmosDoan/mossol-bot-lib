@@ -164,6 +164,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
                 break;
         }
 
+        logger.info("Update Menu to {} : MENU{}", jsonPath, jsonMenu);
         CompletableFuture<PushResult> future = null;
         try {
             future =
@@ -175,7 +176,8 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         }
 
         try {
-            future.join();
+            PushResult result = future.join();
+            logger.info("Pushed a commit {} at {}", result.revision(), result.whenAsText());
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
             if (cause instanceof ChangeConflictException) {
