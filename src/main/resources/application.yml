@@ -24,7 +24,3 @@ retrofit:
   baseUrl: https://api.line.me
   connectionTimeOutMills: 5000
   maxRetry: 3
-logging:
-  file: ./mossol_webapp.log
-  level:
-    me.ramswaroop: DEBUG
