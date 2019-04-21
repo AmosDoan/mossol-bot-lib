@@ -22,7 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import net.mossol.bot.model.RegexText;
 import net.mossol.bot.model.ReplyMessage;
-import net.mossol.bot.service.KeiServiceHandler;
+import net.mossol.bot.service.KSServiceHandler;
 import net.mossol.bot.service.MatcherService;
 import net.mossol.bot.service.MenuServiceHandler;
 import net.mossol.bot.service.MenuServiceHandler.FoodType;
@@ -40,9 +40,6 @@ public class RegexMatcherServiceImpl implements MatcherService {
 
     @Resource
     private MenuServiceHandler menuServiceHandler;
-
-    @Resource
-    private KeiServiceHandler keiServiceHandler;
 
     @PostConstruct
     private void init() {
@@ -80,8 +77,6 @@ public class RegexMatcherServiceImpl implements MatcherService {
                     case DEL_MENU_D:
                         return new ReplyMessage(DEL_MENU_D, null,
                                                 menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD));
-                    case RANDOM_SELECT:
-                        return new ReplyMessage(RANDOM_SELECT, null, keiServiceHandler.getRandomMember(result));
                     case TEXT:
                         return new ReplyMessage(TEXT, null, regex.getResponse());
                 }

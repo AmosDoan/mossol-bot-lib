@@ -64,7 +64,14 @@ public class TextContextConfiguration {
     @Bean
     public Watcher<List<RegexText>> regexTextWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
-                Query.ofJsonPath("/regexText.json"),
-                this::convertToRegexText);
+                                        Query.ofJsonPath("/regexText.json"),
+                                        this::convertToRegexText);
+    }
+
+    @Bean
+    public Watcher<List<RegexText>> KSRegexTextWatcher() {
+        return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
+                                        Query.ofJsonPath("/KSRegexText.json"),
+                                        this::convertToRegexText);
     }
 }

@@ -9,8 +9,6 @@ server:
 rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
 slackBotToken: <defined as environment variable in the production machine>
 slackApi: https://slack.com/api
-logging.level:
-  me.ramswaroop: DEBUG
 
 # line integration
 line:
@@ -26,3 +24,7 @@ retrofit:
   baseUrl: https://api.line.me
   connectionTimeOutMills: 5000
   maxRetry: 3
+logging:
+  file: ./mossol_webapp.log
+  level:
+    me.ramswaroop: DEBUG

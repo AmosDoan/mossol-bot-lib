@@ -1,6 +1,5 @@
 package net.mossol.bot.service.Impl;
 
-import static net.mossol.bot.model.TextType.KEI_CS;
 import static net.mossol.bot.model.TextType.LEAVE_ROOM;
 import static net.mossol.bot.model.TextType.SELECT_MENU_D;
 import static net.mossol.bot.model.TextType.SELECT_MENU_J;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.SimpleText;
-import net.mossol.bot.service.KeiServiceHandler;
+import net.mossol.bot.service.KSServiceHandler;
 import net.mossol.bot.service.MatcherService;
 import net.mossol.bot.service.MenuServiceHandler;
 import net.mossol.bot.service.MenuServiceHandler.FoodType;
@@ -39,7 +38,7 @@ public class SimpleMatcherServiceImpl implements MatcherService {
     private MenuServiceHandler menuServiceHandler;
 
     @Resource
-    private KeiServiceHandler keiServiceHandler;
+    private KSServiceHandler KSServiceHandler;
 
     @Resource
     private Watcher<Map<String, SimpleText>> simpleTextWatcher;
@@ -74,8 +73,6 @@ public class SimpleMatcherServiceImpl implements MatcherService {
                 return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
             case LEAVE_ROOM:
                 return new ReplyMessage(LEAVE_ROOM, null, null);
-            case KEI_CS:
-                return new ReplyMessage(KEI_CS, null, keiServiceHandler.getCSLotto());
         }
 
         logger.debug("There is no matched simple for the message : " + simpleText);

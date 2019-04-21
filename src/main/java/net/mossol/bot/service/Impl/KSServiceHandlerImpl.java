@@ -14,15 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import net.mossol.bot.service.KeiServiceHandler;
+import net.mossol.bot.service.KSServiceHandler;
 
 import com.linecorp.centraldogma.client.Watcher;
 import org.springframework.util.CollectionUtils;
 
 @Service
-public class KeiServiceHandlerImpl implements KeiServiceHandler {
+public class KSServiceHandlerImpl implements KSServiceHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(KeiServiceHandlerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(KSServiceHandlerImpl.class);
 
     private final Random random = new Random();
 
