@@ -7,9 +7,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class KeiServiceHandlerImplTest {
+public class KSServiceHandlerImplTest {
 
-    private KeiServiceHandlerImpl handler = new KeiServiceHandlerImpl();
+    private KSServiceHandlerImpl handler = new KSServiceHandlerImpl();
 
     @Test
     public void testRandom() {
