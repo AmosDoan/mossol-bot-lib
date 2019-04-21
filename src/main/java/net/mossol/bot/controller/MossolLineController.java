@@ -1,24 +1,40 @@
-package net.mossol.bot;
+package net.mossol.bot.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.common.HttpStatus;
-import com.linecorp.armeria.common.MediaType;
-import com.linecorp.armeria.server.annotation.*;
-import net.mossol.bot.connection.RetrofitConnection;
-import net.mossol.bot.model.*;
-import net.mossol.bot.service.MessageHandler;
-import net.mossol.bot.util.MessageBuildUtil;
+import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.Resource;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.concurrent.atomic.AtomicLong;
+import net.mossol.bot.connection.RetrofitConnection;
+import net.mossol.bot.model.LineReplyRequest;
+import net.mossol.bot.model.LineRequest;
+import net.mossol.bot.model.LineResponse;
+import net.mossol.bot.model.LocationInfo;
+import net.mossol.bot.model.ReplyMessage;
+import net.mossol.bot.model.TextType;
+import net.mossol.bot.service.MessageHandler;
+import net.mossol.bot.util.MessageBuildUtil;
+import net.mossol.bot.util.MossolUtil;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.server.annotation.Default;
+import com.linecorp.armeria.server.annotation.Get;
+import com.linecorp.armeria.server.annotation.Header;
+import com.linecorp.armeria.server.annotation.Param;
+import com.linecorp.armeria.server.annotation.Path;
+import com.linecorp.armeria.server.annotation.Post;
+import com.linecorp.armeria.server.annotation.RequestObject;
 
 /**
  * Created by Amos.Doan.Mac on 2017. 11. 18..
@@ -39,11 +55,11 @@ public class MossolLineController {
     @Resource
     private RetrofitConnection retrofitConnection;
 
-    private boolean sendFoodRequest(String token, MenuInfo menu) {
-        return sendRequest(MessageBuildUtil.sendFoodMessage(token, menu));
+    private boolean sendFoodReply(String token, LocationInfo menu) {
+        return sendReply(MessageBuildUtil.sendFoodMessage(token, menu));
     }
 
-    private boolean sendRequest(LineReplyRequest request) {
+    private boolean sendReply(LineReplyRequest request) {
         String payload = MossolUtil.writeJsonString(request);
         logger.debug("sendRequest Payload : {}", payload);
         retrofitConnection.sendReply(request);
@@ -90,14 +106,14 @@ public class MossolLineController {
             case SELECT_MENU_K:
             case SELECT_MENU_J:
             case SELECT_MENU_D:
-                sendFoodRequest(token, replyMessage.getMenuInfo());
+                sendFoodReply(token, replyMessage.getLocationInfo());
                 return;
             case LEAVE_ROOM:
                 String groupId =  event.getSource().getGroupId();
                 leaveRoom(groupId);
                 break;
             default:
-                sendRequest(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
+                sendReply(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
                 return;
         }
 

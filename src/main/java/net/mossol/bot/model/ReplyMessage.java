@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReplyMessage {
     private final TextType type;
-    private final MenuInfo menuInfo;
+    private final LocationInfo locationInfo;
     private final String text;
 }

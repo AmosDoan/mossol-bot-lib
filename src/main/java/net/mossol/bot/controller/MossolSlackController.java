@@ -1,4 +1,4 @@
-package net.mossol.bot;
+package net.mossol.bot.controller;
 
 import javax.annotation.Resource;
 
@@ -54,7 +54,7 @@ public class MossolSlackController extends Bot {
             case SELECT_MENU_J:
             case SELECT_MENU_D:
                 reply(session, event,
-                      new Message(MessageBuildUtil.sendFoodMessage(replyMessage.getMenuInfo())));
+                      new Message(MessageBuildUtil.sendFoodMessage(replyMessage.getLocationInfo())));
                 return;
             case LEAVE_ROOM:
                 break;

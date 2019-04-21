@@ -36,7 +36,7 @@ public class KeiContextConfiguration {
                                                        new TypeReference<List<String>>(){});
             return info;
         } catch (IOException e) {
-            logger.error("Converting Json to MenuInfo Map Failed", e);
+            logger.error("Converting Json to LocationInfo Map Failed", e);
             return null;
         }
     }

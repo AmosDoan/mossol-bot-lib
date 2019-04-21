@@ -1,4 +1,4 @@
-package net.mossol.bot;
+package net.mossol.bot.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

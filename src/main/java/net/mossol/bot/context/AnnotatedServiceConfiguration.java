@@ -2,8 +2,8 @@ package net.mossol.bot.context;
 
 import javax.annotation.Resource;
 
-import net.mossol.bot.MossolMessageController;
-import net.mossol.bot.MossolLineController;
+import net.mossol.bot.controller.MossolMessageController;
+import net.mossol.bot.controller.MossolLineController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

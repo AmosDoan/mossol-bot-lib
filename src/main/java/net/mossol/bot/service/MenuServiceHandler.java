@@ -1,6 +1,6 @@
 package net.mossol.bot.service;
 
-import net.mossol.bot.model.MenuInfo;
+import net.mossol.bot.model.LocationInfo;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface MenuServiceHandler {
     }
 
     String getMenu(FoodType type);
-    MenuInfo selectMenu(FoodType type);
+    LocationInfo selectMenu(FoodType type);
     String addMenu(List<String> food, FoodType type);
     String removeMenu(List<String> food, FoodType type);
 }
