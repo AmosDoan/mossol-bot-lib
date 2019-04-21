@@ -1,0 +1,19 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation project(':lib')
+    testImplementation project(':lib')
+
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
+
+    // Central Dogma
+    implementation group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
+
+    // Slack Bot
+    implementation group: 'me.ramswaroop.jbot', name: 'jbot'
+    implementation(group: 'javax.websocket', name: 'javax.websocket-api')
+}

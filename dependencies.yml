@@ -1,0 +1,33 @@
+boms:
+  - org.springframework.boot:spring-boot-dependencies:2.1.4.RELEASE
+  - com.linecorp.armeria:armeria-bom:0.83.0
+  - com.linecorp.centraldogma:centraldogma-bom:0.38.0
+
+org.projectlombok:
+  lombok: 
+    version: '1.16.16'
+
+me.ramswaroop.jbot:
+  jbot:
+    version: '4.1.0'
+
+javax.websocket:
+  javax.websocket-api:
+    version: '1.1'
+
+com.squareup.retrofit2:
+  retrofit:
+    version:  &RETROFIT_VERSION '2.4.0'
+  adapter-java8: 
+    version: *RETROFIT_VERSION
+  converter-jackson: 
+    version: *RETROFIT_VERSION
+
+org.eclipse.jetty:
+  jetty-alpn-conscrypt-client: 
+    version: '9.4.11.v20180605'
+org.wildfly.openssl:
+  wildfly-openssl:
+    version: '1.0.4.Final'
+
+

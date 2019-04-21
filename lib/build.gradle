@@ -1,0 +1,40 @@
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
+    /*
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude(module: 'commons-logging')
+    }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
+    */
+
+    // Armeria
+    implementation group: 'com.linecorp.armeria', name: 'armeria'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure'
+    implementation group: 'com.linecorp.armeria', name: 'armeria-retrofit2'
+    testImplementation(group: 'com.linecorp.armeria', name: 'armeria-testing')
+
+    // Central Dogma
+    implementation group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
+    implementation group: 'com.jayway.jsonpath', name: 'json-path'
+
+    // Lombok
+    implementation group: 'org.projectlombok', name: 'lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
+
+    // Slack Bot
+    implementation group: 'me.ramswaroop.jbot', name: 'jbot'
+    implementation(group: 'javax.websocket', name: 'javax.websocket-api')
+
+    // Retrofit
+    implementation group: 'com.squareup.retrofit2', name: 'retrofit'
+    implementation group: 'com.squareup.retrofit2', name: 'adapter-java8'
+    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson'
+
+    // SSL
+    implementation group: 'org.eclipse.jetty', name: 'jetty-alpn-conscrypt-client'
+    testImplementation group: 'org.wildfly.openssl', name: 'wildfly-openssl'
+}

@@ -1,79 +1,18 @@
 buildscript {
-    ext {
-        springBootVersion = '2.1.4.RELEASE'
-    }
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.2'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE'
+        classpath 'io.spring.gradle:dependency-management-plugin:1.0.7.RELEASE'
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-group = 'net.mossol'
-version = '0.1.2-SNAPSHOT'
-description = """"""
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    // import BOMs
-    implementation platform('org.springframework.boot:spring-boot-dependencies:2.1.4.RELEASE')
-    implementation platform('com.linecorp.armeria:armeria-bom:0.83.0')
-    implementation platform('com.linecorp.centraldogma:centraldogma-bom:0.38.0')
-
-    // Spring-boot
-    implementation('org.springframework.boot:spring-boot-starter-web')
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude(module: 'commons-logging')
+allprojects {
+    repositories {
+        mavenCentral()
     }
-    providedCompile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat'
-
-    // Armeria
-    implementation group: 'com.linecorp.armeria', name: 'armeria'
-    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter'
-    implementation group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure'
-    implementation group: 'com.linecorp.armeria', name: 'armeria-retrofit2'
-    testImplementation(group: 'com.linecorp.armeria', name: 'armeria-testing')
-
-    // Logging
-    runtime group: 'org.slf4j', name: 'log4j-over-slf4j', version:'1.7.25'
-    runtime group: 'ch.qos.logback', name: 'logback-classic', version:'1.2.3'
-    implementation(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5') {
-        exclude(module: 'commons-logging')
-    }
-
-    // Central Dogma
-    implementation group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
-    implementation group: 'com.jayway.jsonpath', name: 'json-path', version:'2.0.0'
-
-    // Lombok
-    implementation group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version:'1.16.16'
-
-    // Slack Bot
-    implementation group: 'me.ramswaroop.jbot', name: 'jbot', version: '4.1.0'
-    providedCompile(group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1')
-
-    // Retrofit
-    implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.4.0'
-    implementation group: 'com.squareup.retrofit2', name: 'adapter-java8', version: '2.4.0'
-    implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.4.0'
-
-    // SSL
-    implementation group: 'org.eclipse.jetty', name: 'jetty-alpn-conscrypt-client', version: '9.4.11.v20180605'
-    testImplementation group: 'org.wildfly.openssl', name: 'wildfly-openssl', version: '1.0.4.Final'
 }
 
-war {
-    baseName = 'mossol-service'
-    version = '0.1.3'
-}
+apply from: "${rootDir}/gradle/scripts/build-flags.gradle"

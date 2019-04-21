@@ -8,7 +8,7 @@ cache:
   directories:
   - "$HOME/.m2/repository"
   - "$HOME/.gradle"
-script: "./gradlew clean bootJar"
+script: "./gradlew clean build"
 install:
   - ssh-keyscan -p ${PORT} ${MOSSOL_DEPLOY_ADDRESS} 2>&1 | tee -a ${TRAVIS_HOME}/.ssh/known_hosts
 before_deploy:
