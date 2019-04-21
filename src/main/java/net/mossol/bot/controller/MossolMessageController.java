@@ -1,4 +1,4 @@
-package net.mossol.bot;
+package net.mossol.bot.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.armeria.common.HttpResponse;
@@ -7,6 +7,8 @@ import com.linecorp.armeria.common.MediaType;
 import com.linecorp.armeria.server.annotation.Path;
 import com.linecorp.armeria.server.annotation.Post;
 import com.linecorp.armeria.server.annotation.RequestObject;
+
+import net.mossol.bot.util.MossolUtil;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
@@ -44,7 +46,8 @@ public class MossolMessageController {
                 throw new Exception();
             }
         } catch (Exception e) {
-            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, MossolUtil.writeJsonString(Collections.emptyMap()));
+            httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, MossolUtil
+                    .writeJsonString(Collections.emptyMap()));
             logger.debug("httpResponse <{}>", httpResponse);
             return httpResponse;
         }
@@ -56,7 +59,7 @@ public class MossolMessageController {
             case SELECT_MENU_K:
             case SELECT_MENU_J:
             case SELECT_MENU_D:
-                final String foodMessage = MessageBuildUtil.sendFoodMessage(replyMessage.getMenuInfo());
+                final String foodMessage = MessageBuildUtil.sendFoodMessage(replyMessage.getLocationInfo());
                 ret.put("message", foodMessage);
                 response = MossolUtil.writeJsonString(ret);
                 httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);

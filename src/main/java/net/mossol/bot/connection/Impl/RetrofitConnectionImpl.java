@@ -2,16 +2,16 @@ package net.mossol.bot.connection.Impl;
 
 import java.util.Collections;
 
-import net.mossol.bot.model.LineReplyRequest;
-import net.mossol.bot.connection.RetrofitClient;
-import net.mossol.bot.connection.RetrofitConnection;
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import net.mossol.bot.connection.RetrofitClient;
+import net.mossol.bot.connection.RetrofitConnection;
+import net.mossol.bot.model.LineReplyRequest;
 
 @Component
 public class RetrofitConnectionImpl implements RetrofitConnection {

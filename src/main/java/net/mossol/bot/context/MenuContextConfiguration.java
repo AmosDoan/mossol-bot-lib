@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import net.mossol.bot.model.MenuInfo;
+import net.mossol.bot.model.LocationInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -34,33 +35,33 @@ public class MenuContextConfiguration {
     @Resource
     private ObjectMapper objectMapper;
 
-    private Map<String, MenuInfo> convertToMenuInfo(JsonNode jsonNode) {
+    private Map<String, LocationInfo> convertToMenuInfo(JsonNode jsonNode) {
         try {
-            List<MenuInfo> info = objectMapper.readValue(objectMapper.treeAsTokens(jsonNode),
-                    new TypeReference<List<MenuInfo>>(){});
-            return info.stream().collect(Collectors.toMap(MenuInfo::getTitle, Function.identity()));
+            List<LocationInfo> info = objectMapper.readValue(objectMapper.treeAsTokens(jsonNode),
+                                                             new TypeReference<List<LocationInfo>>(){});
+            return info.stream().collect(Collectors.toMap(LocationInfo::getTitle, Function.identity()));
         } catch (IOException e) {
-            logger.error("Converting Json to MenuInfo Map Failed", e);
+            logger.error("Converting Json to LocationInfo Map Failed", e);
             return null;
         }
     }
 
     @Bean
-    public Watcher<Map<String, MenuInfo>> japanMenuWatcher() {
+    public Watcher<Map<String, LocationInfo>> japanMenuWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
                                         Query.ofJsonPath("/japanMenu.json"),
                                         this::convertToMenuInfo);
     }
 
     @Bean
-    public Watcher<Map<String, MenuInfo>> koreaMenuWatcher() {
+    public Watcher<Map<String, LocationInfo>> koreaMenuWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
                                         Query.ofJsonPath("/koreaMenu.json"),
                                         this::convertToMenuInfo);
     }
 
     @Bean
-    public Watcher<Map<String, MenuInfo>> drinkMenuWatcher() {
+    public Watcher<Map<String, LocationInfo>> drinkMenuWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
                                         Query.ofJsonPath("/drinkMenu.json"),
                                         this::convertToMenuInfo);
