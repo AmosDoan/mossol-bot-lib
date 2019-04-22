@@ -11,16 +11,16 @@ import org.springframework.web.socket.WebSocketSession;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
+import net.mossol.bot.slack.ReconnectableBot;
 import net.mossol.bot.util.MessageBuildUtil;
 
 import me.ramswaroop.jbot.core.common.Controller;
 import me.ramswaroop.jbot.core.common.EventType;
-import me.ramswaroop.jbot.core.slack.Bot;
 import me.ramswaroop.jbot.core.slack.models.Event;
 import me.ramswaroop.jbot.core.slack.models.Message;
 
 @Service
-public class MossolSlackController extends Bot {
+public class MossolSlackController extends ReconnectableBot {
 
     private static final Logger logger = LoggerFactory.getLogger(MossolSlackController.class);
 
@@ -36,7 +36,7 @@ public class MossolSlackController extends Bot {
     }
 
     @Override
-    public Bot getSlackBot() {
+    public ReconnectableBot getSlackBot() {
         return this;
     }
 
