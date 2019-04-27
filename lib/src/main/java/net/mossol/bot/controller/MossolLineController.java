@@ -79,10 +79,10 @@ public class MossolLineController {
 
             String hash = Base64.encodeBase64String(sha256_HMAC.doFinal(requestBody.getBytes()));
             if (signature.equals(hash)) {
-                logger.debug("PASS: Hash Result {}, Signature {}", hash, signature);
+                logger.debug("PASS: Hash Result {}, Signature {} Secret {}", hash, signature, SECRET_KEY);
                 return true;
             } else {
-                logger.debug("FAIL: Hash Result {}, Signature {}", hash, signature);
+                logger.debug("FAIL: Hash Result {}, Signature {} Secret {}", hash, signature, SECRET_KEY);
                 return false;
             }
         } catch (Exception e) {

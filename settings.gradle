@@ -2,5 +2,5 @@ rootProject.name = 'line_bot_mossol'
 
 apply from: "${rootDir}/gradle/scripts/settings-flags.gradle"
 
-includeWithFlags ':lib', 'java'
+includeWithFlags ':lib', 'java', 'publish'
 includeWithFlags ':bot', 'java'
