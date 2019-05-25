@@ -169,6 +169,12 @@ public abstract class ReconnectableBot extends BaseBot {
             if (reply.getChannel() == null && event.getChannelId() != null) {
                 reply.setChannel(event.getChannelId());
             }
+
+            final String threadTs = event.getThreadTs();
+            if (!StringUtils.isEmpty(threadTs)) {
+                reply.setThreadTs(threadTs);
+            }
+
             session.sendMessage(new TextMessage(reply.toJSONString()));
             if (logger.isDebugEnabled()) {  // For debugging purpose only
                 logger.debug("Reply (Message): {}", reply.toJSONString());
