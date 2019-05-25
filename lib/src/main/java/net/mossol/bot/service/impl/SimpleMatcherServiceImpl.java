@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.SimpleText;
@@ -77,6 +78,10 @@ public class SimpleMatcherServiceImpl implements MatcherService {
 
     @Override
     public ReplyMessage match(String requestMessage) throws Exception {
+        if (StringUtils.isEmpty(requestMessage)) {
+            return null;
+        }
+
         final String simpleMessage = requestMessage.replaceAll("\\s+", "");
         final SimpleText simpleText = simpleTextContext.get(simpleMessage);
 
