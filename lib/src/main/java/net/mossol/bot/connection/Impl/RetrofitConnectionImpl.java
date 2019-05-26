@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import net.mossol.bot.connection.RetrofitClient;
 import net.mossol.bot.connection.RetrofitConnection;
+import net.mossol.bot.model.LinePushRequest;
 import net.mossol.bot.model.LineReplyRequest;
 
 @Component
@@ -23,36 +24,64 @@ public class RetrofitConnectionImpl implements RetrofitConnection {
     @Resource
     private RetrofitClient retrofitClient;
 
+    @Override
     public void sendReply(LineReplyRequest request) {
-        logger.info("sendReply : requeste <{}>,token<{}>", request, token);
+        logger.info("sendReply : request <{}>,token<{}>", request, token);
         retrofitClient.sendReply("Bearer " + token, request).whenComplete(
                 (response , e) -> {
                     if (e != null) {
                         logger.warn("Got exception from LINE Bot Server! response<{}>", response, e);
+                        return;
                     }
 
                     if (response.code() == 200) {
-                        logger.warn("Got success LINE Bot Server! request<{}>,response<{}>", request, response);
+                        logger.warn("Got success from LINE Bot Server! request<{}>,response<{}>",
+                                    request, response);
                     } else {
-                        logger.warn("Got fail LINE Bot Server! request<{}>,response<{}>", request, response);
+                        logger.warn("Got failure from LINE Bot Server! request<{}>,response<{}>",
+                                    request, response);
                     }
                 }
         );
     }
 
+    @Override
     public void leaveRoom(LineReplyRequest request, String groupId) {
         retrofitClient.leaveRoom(groupId, "Bearer " + token, Collections.emptyMap()).whenComplete(
                 (response , e) -> {
                     if (e != null) {
-                        logger.warn("Got exception from LINE Bot Server! groupId<{}>,response<{}>", groupId, response, e);
+                        logger.warn("Got exception from LINE Bot Server! groupId<{}>,response<{}>",
+                                    groupId, response, e);
                     }
 
                     if (response.code() == 200) {
-                        logger.warn("Got success LINE Bot Server! groupId<{}>,request<{}>,response<{}>", groupId, request,
-                                response);
+                        logger.warn("Got success from LINE Bot Server! groupId<{}>,request<{}>,response<{}>",
+                                    groupId, request, response);
                     } else {
-                        logger.warn("Got fail LINE Bot Server! groupId<{}>,request<{}>,response<{}>", groupId, request,
-                                response);
+                        logger.warn("Got failure from LINE Bot Server! groupId<{}>,request<{}>,response<{}>",
+                                    groupId, request, response);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void sendPush(LinePushRequest request) {
+        logger.info("sendPush : request <{}>,token<{}>", request, token);
+        retrofitClient.sendPush("Bearer " + token, request).whenComplete(
+                (response , e) -> {
+                    if (e != null) {
+                        logger.warn("Push request got exception from LINE Bot Server! response<{}>",
+                                    response, e);
+                        return;
+                    }
+
+                    if (response.code() == 200) {
+                        logger.warn("Push request got success from LINE Bot Server! request<{}>,response<{}>",
+                                    request, response);
+                    } else {
+                        logger.warn("Push request got failure from LINE Bot Server! request<{}>,response<{}>",
+                                    request, response);
                     }
                 }
         );

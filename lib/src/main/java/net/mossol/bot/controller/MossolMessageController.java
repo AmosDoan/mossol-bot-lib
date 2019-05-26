@@ -1,26 +1,29 @@
 package net.mossol.bot.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import net.mossol.bot.model.ReplyMessage;
+import net.mossol.bot.model.TextType;
+import net.mossol.bot.service.MessageHandler;
+import net.mossol.bot.util.MessageBuildUtil;
+import net.mossol.bot.util.MossolUtil;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
 import com.linecorp.armeria.server.annotation.Path;
 import com.linecorp.armeria.server.annotation.Post;
 import com.linecorp.armeria.server.annotation.RequestObject;
-
-import net.mossol.bot.util.MossolUtil;
-import net.mossol.bot.model.ReplyMessage;
-import net.mossol.bot.model.TextType;
-import net.mossol.bot.service.MessageHandler;
-import net.mossol.bot.util.MessageBuildUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class MossolMessageController {
