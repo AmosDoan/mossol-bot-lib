@@ -45,7 +45,7 @@ public class RetrofitClientConfiguration {
                 .sslContextCustomizer(b -> b.trustManager(InsecureTrustManagerFactory.INSTANCE))
                 .build();
 
-        RetrofitClient retrofitClient = new ArmeriaRetrofitBuilder(clientFactory)
+        return new ArmeriaRetrofitBuilder(clientFactory)
                 .baseUrl(baseUrl)
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
@@ -59,6 +59,5 @@ public class RetrofitClientConfiguration {
                 })
                 .build()
                 .create(RetrofitClient.class);
-        return retrofitClient;
     }
 }

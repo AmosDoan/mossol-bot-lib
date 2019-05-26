@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.mossol.bot.connection.RetrofitConnection;
+import net.mossol.bot.model.LinePushRequest;
 import net.mossol.bot.model.LineReplyRequest;
 import net.mossol.bot.model.LineRequest;
 import net.mossol.bot.model.LineResponse;
 import net.mossol.bot.model.LocationInfo;
+import net.mossol.bot.model.Message.TextMessage;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
@@ -168,5 +170,20 @@ public class MossolLineController {
         HttpResponse httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, requestObj.getEvents().toString());
         logger.debug("httpResponse <{}>", httpResponse);
         return httpResponse;
+    }
+
+    @Post
+    @Path("/sendPush")
+    public HttpResponse sendPush(@RequestObject JsonNode request) {
+        final String message = request.get("message").textValue();
+        final String target = request.get("target").textValue();
+
+        logger.info("request {}", request);
+
+        LinePushRequest pushRequest = new LinePushRequest(target);
+        pushRequest.setMessage(MessageBuildUtil.buildTextMessage(message));
+        retrofitConnection.sendPush(pushRequest);
+
+        return HttpResponse.of(HttpStatus.OK);
     }
 }

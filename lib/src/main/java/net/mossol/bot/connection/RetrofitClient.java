@@ -1,5 +1,6 @@
 package net.mossol.bot.connection;
 
+import net.mossol.bot.model.LinePushRequest;
 import net.mossol.bot.model.LineReplyRequest;
 import retrofit2.Response;
 import retrofit2.http.*;
@@ -18,4 +19,9 @@ public interface RetrofitClient {
     CompletableFuture<Response<Object>> leaveRoom(@Path("groupId") String groupId,
                                                   @Header("Authorization") String token,
                                                   @Body Object dummy);
+
+    @POST("/v2/bot/message/push")
+    @Headers(CONTENT_TYPE_JSON_UTF8)
+    CompletableFuture<Response<Object>> sendPush(@Header("Authorization") String token,
+                                                 @Body LinePushRequest request);
 }

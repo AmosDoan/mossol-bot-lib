@@ -14,7 +14,7 @@ public final class MessageBuildUtil {
     private MessageBuildUtil() {
     }
 
-    private static TextMessage buildTextMessage(String content) {
+    public static TextMessage buildTextMessage(String content) {
         TextMessage replyMessage = new TextMessage(content);
         replyMessage.setType("text");
         return replyMessage;
