@@ -10,6 +10,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import net.mossol.bot.connection.RetrofitConnection;
@@ -42,6 +43,10 @@ import com.linecorp.armeria.server.annotation.RequestObject;
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
 @Service
+@ConditionalOnProperty(
+        value = "service.enabled.line",
+        havingValue = "true"
+)
 public class MossolLineController {
     private static final Logger logger = LoggerFactory.getLogger(MossolLineController.class);
     private static final String template = "%dth, Hello, %s!";

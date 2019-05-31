@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -19,7 +20,12 @@ import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.slack.models.Event;
 import me.ramswaroop.jbot.core.slack.models.Message;
 
+
 @Service
+@ConditionalOnProperty(
+        value = "service.enabled.slack",
+        havingValue = "true"
+)
 public class MossolSlackController extends ReconnectableBot {
 
     private static final Logger logger = LoggerFactory.getLogger(MossolSlackController.class);
