@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 
 import net.mossol.bot.controller.MossolMessageController;
 import net.mossol.bot.controller.MossolLineController;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +22,11 @@ public class AnnotatedServiceConfiguration {
     MossolMessageController mossolMessageController;
 
     @Bean
-    public AnnotatedServiceRegistrationBean mossolHandler() {
+    @ConditionalOnProperty(
+            value = "service.enabled.line",
+            havingValue = "true"
+    )
+    public AnnotatedServiceRegistrationBean mossolLineHandler() {
         return new AnnotatedServiceRegistrationBean().setServiceName("MOSSOL")
                                                      .setPathPrefix("/")
                                                      .setService(mossolLineController);
