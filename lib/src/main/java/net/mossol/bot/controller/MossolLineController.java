@@ -43,10 +43,6 @@ import com.linecorp.armeria.server.annotation.RequestObject;
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
 @Service
-@ConditionalOnProperty(
-        value = "service.enabled.line",
-        havingValue = "true"
-)
 public class MossolLineController {
     private static final Logger logger = LoggerFactory.getLogger(MossolLineController.class);
     private static final String template = "%dth, Hello, %s!";

@@ -20,7 +20,6 @@ import me.ramswaroop.jbot.core.common.EventType;
 import me.ramswaroop.jbot.core.slack.models.Event;
 import me.ramswaroop.jbot.core.slack.models.Message;
 
-
 @Service
 @ConditionalOnProperty(
         value = "service.enabled.slack",

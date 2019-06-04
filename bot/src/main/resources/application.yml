@@ -24,3 +24,8 @@ retrofit:
   baseUrl: https://api.line.me
   connectionTimeOutMills: 5000
   maxRetry: 3
+
+service:
+  enabled:
+    line: true
+    slack: true
