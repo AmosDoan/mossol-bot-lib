@@ -23,7 +23,9 @@ import me.ramswaroop.jbot.core.slack.models.Message;
 @Service
 @ConditionalOnProperty(
         value = "service.enabled.slack",
-        havingValue = "true"
+        havingValue = "true",
+        matchIfMissing = true
+
 )
 public class MossolSlackController extends ReconnectableBot {
 
