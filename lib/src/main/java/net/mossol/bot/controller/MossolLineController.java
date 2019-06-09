@@ -10,7 +10,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import net.mossol.bot.connection.RetrofitConnection;
@@ -19,7 +18,6 @@ import net.mossol.bot.model.LineReplyRequest;
 import net.mossol.bot.model.LineRequest;
 import net.mossol.bot.model.LineResponse;
 import net.mossol.bot.model.LocationInfo;
-import net.mossol.bot.model.Message.TextMessage;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
@@ -31,10 +29,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
-import com.linecorp.armeria.server.annotation.Default;
-import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.Header;
-import com.linecorp.armeria.server.annotation.Param;
 import com.linecorp.armeria.server.annotation.Path;
 import com.linecorp.armeria.server.annotation.Post;
 import com.linecorp.armeria.server.annotation.RequestObject;
@@ -49,8 +44,6 @@ public class MossolLineController {
 
     @Value("${line.secret}")
     private String SECRET_KEY;
-
-    private final AtomicLong counter = new AtomicLong();
 
     @Resource
     private MessageHandler messageHandler;
@@ -121,13 +114,6 @@ public class MossolLineController {
         }
 
         throw new Exception("Send message failed");
-    }
-
-    @Get("/healthCheck")
-    public HttpResponse healthCheck(@Param("name") @Default("world") String name) {
-        logger.debug("health check");
-        return HttpResponse.of(HttpStatus.OK, MediaType.PLAIN_TEXT_UTF_8,
-                               String.format(template, counter.incrementAndGet(), name));
     }
 
     @Post
