@@ -4,6 +4,9 @@ dependencies {
         exclude(module: 'commons-logging')
     }
 
+    // Mongo DB
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+
     // Armeria
     compile group: 'com.linecorp.armeria', name: 'armeria'
     compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter'
