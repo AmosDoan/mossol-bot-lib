@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import net.mossol.bot.model.LocationInfo;
+import net.mossol.bot.repository.LocationInfoMongoDBRepository;
 import net.mossol.bot.service.MenuServiceHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,10 +61,10 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     private Watcher<Map<String, LocationInfo>> japanMenuWatcher;
 
     @Resource
-    private Watcher<Map<String, LocationInfo>> koreaMenuWatcher;
+    private Watcher<Map<String, LocationInfo>> drinkMenuWatcher;
 
     @Resource
-    private Watcher<Map<String, LocationInfo>> drinkMenuWatcher;
+    private LocationInfoMongoDBRepository locationInfoMongoDBRepository;
 
     private final Random random = new Random();
 
@@ -84,7 +86,6 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     @PostConstruct
     private void init() throws InterruptedException {
         japanMenu = japanDefaultCandidate;
-        koreaMenu = koreaDefaultCandidate;
         drinkMenu = drinkDefaultCandidate;
 
         japanMenuWatcher.watch((revision, menu) -> {
@@ -102,21 +103,6 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             logger.error("Failed fetch Japan Menu from Central Dogma; Set the Default Menu");
         }
 
-        koreaMenuWatcher.watch((revision, menu) -> {
-            if (menu == null)  {
-                logger.warn("Korea Menu Watch Failed");
-                return;
-            }
-            logger.info("Korea Menu Updated : " + menu);
-            koreaMenu = menu;
-        });
-
-        try {
-            koreaMenuWatcher.awaitInitialValue(5, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            logger.error("Failed fetch Korea Menu from Central Dogma; Set the Default Menu", e);
-        }
-
         drinkMenuWatcher.watch((revision, menu) -> {
             if (menu == null)  {
                 logger.warn("Drink Menu Watch Failed");
@@ -131,6 +117,15 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         } catch (TimeoutException e) {
             logger.error("Failed fetch Drink Menu from Central Dogma; Set the Default Menu", e);
         }
+
+        koreaMenu = locationInfoMongoDBRepository.findAll().stream()
+                                                 .collect(Collectors.toMap(LocationInfo::getTitle,
+                                                                           Function.identity()));
+
+        if (koreaMenu == null) {
+            logger.info("Failed fetch Korea Menu from MongoDB; Set the Default Menu");
+            koreaMenu = koreaDefaultCandidate;
+        }
     }
 
     private String convertToJsonNode(Map<String, LocationInfo> map) {
@@ -144,7 +139,18 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
         }
     }
 
-    private void updateMenu(Map<String, LocationInfo> menu, FoodType foodType) {
+    private void removeMenuFromMongoDB(LocationInfo locationInfo) {
+        final String locationId = locationInfo.getId();
+        logger.debug("delete location; id <{}> locationInfo <{}> ", locationId, locationInfo);
+        locationInfoMongoDBRepository.deleteById(locationId);
+    }
+
+    private void updateMenuToMongoDB(LocationInfo locationInfo) {
+        LocationInfo ret = locationInfoMongoDBRepository.insert(locationInfo);
+        logger.debug("add location; id <{}> locationInfo <{}> ", ret.getId(), ret);
+    }
+
+    private void updateMenuToCentralDogma(Map<String, LocationInfo> menu, FoodType foodType) {
         String jsonMenu = convertToJsonNode(menu);
         if (jsonMenu == null) {
             return;
@@ -152,9 +158,6 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
         String jsonPath = null;
         switch(foodType) {
-            case KOREA_FOOD:
-                jsonPath = "/koreaMenu.json";
-                break;
             case JAPAN_FOOD:
                 jsonPath = "/japanMenu.json";
                 break;
@@ -239,11 +242,17 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             return alreadyExistMenu;
         }
 
-        menu.put(food, new LocationInfo(food, -1, -1));
+        LocationInfo locationInfo = new LocationInfo(food, -1, -1);
+
+        menu.put(food, locationInfo);
         String msg = String.format(addFormat, food);
         logger.debug("DEBUG : {}", msg);
 
-        updateMenu(menu, type);
+        if (type == FoodType.KOREA_FOOD) {
+            updateMenuToMongoDB(locationInfo);
+        } else {
+            updateMenuToCentralDogma(menu, type);
+        }
 
         return msg;
     }
@@ -262,11 +271,15 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
             return removeFail;
         }
 
-        menu.remove(food);
+        LocationInfo locationInfo = menu.remove(food);
         String msg = String.format(removeFormat, food);
         logger.debug("DEBUG : {}", msg);
 
-        updateMenu(menu, type);
+        if (type == FoodType.KOREA_FOOD) {
+            removeMenuFromMongoDB(locationInfo);
+        } else {
+            updateMenuToCentralDogma(menu, type);
+        }
 
         return msg;
     }
