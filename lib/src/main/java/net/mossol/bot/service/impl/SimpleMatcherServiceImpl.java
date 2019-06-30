@@ -24,7 +24,7 @@ import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.SimpleText;
 import net.mossol.bot.service.MatcherService;
 import net.mossol.bot.service.MenuServiceHandler;
-import net.mossol.bot.service.MenuServiceHandler.FoodType;
+import net.mossol.bot.model.MenuType;
 
 import com.linecorp.centraldogma.client.Watcher;
 
@@ -55,19 +55,19 @@ public class SimpleMatcherServiceImpl implements MatcherService {
     private ReplyMessage simpleTextHandle(SimpleText simpleText) throws Exception {
         switch (simpleText.getType()) {
             case SHOW_MENU_K:
-                return new ReplyMessage(SHOW_MENU_K, null, menuServiceHandler.getMenu(FoodType.KOREA_FOOD));
+                return new ReplyMessage(SHOW_MENU_K, null, menuServiceHandler.getMenu(MenuType.KOREA_MENU));
             case SHOW_MENU_J:
-                return new ReplyMessage(SHOW_MENU_J, null, menuServiceHandler.getMenu(FoodType.JAPAN_FOOD));
+                return new ReplyMessage(SHOW_MENU_J, null, menuServiceHandler.getMenu(MenuType.JAPAN_MENU));
             case SHOW_MENU_D:
-                return new ReplyMessage(SHOW_MENU_D, null, menuServiceHandler.getMenu(FoodType.DRINK_FOOD));
+                return new ReplyMessage(SHOW_MENU_D, null, menuServiceHandler.getMenu(MenuType.KOREA_DRINK_MENU));
             case TEXT:
                 return new ReplyMessage(TEXT, null, simpleText.getResponse());
             case SELECT_MENU_K:
-                return new ReplyMessage(SELECT_MENU_K, menuServiceHandler.selectMenu(FoodType.KOREA_FOOD), null);
+                return new ReplyMessage(SELECT_MENU_K, menuServiceHandler.selectMenu(MenuType.KOREA_MENU), null);
             case SELECT_MENU_J:
-                return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(FoodType.JAPAN_FOOD), null);
+                return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(MenuType.JAPAN_MENU), null);
             case SELECT_MENU_D:
-                return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
+                return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(MenuType.KOREA_DRINK_MENU), null);
             case LEAVE_CHAT:
                 return new ReplyMessage(LEAVE_CHAT, null, simpleText.getResponse());
         }

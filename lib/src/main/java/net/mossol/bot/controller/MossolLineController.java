@@ -1,7 +1,5 @@
 package net.mossol.bot.controller;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import javax.annotation.Resource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,7 +20,7 @@ import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
 import net.mossol.bot.service.MessageHandler;
 import net.mossol.bot.util.MessageBuildUtil;
-import net.mossol.bot.util.MossolUtil;
+import net.mossol.bot.util.MossolJsonUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -56,7 +54,7 @@ public class MossolLineController {
     }
 
     private boolean sendReply(LineReplyRequest request) {
-        String payload = MossolUtil.writeJsonString(request);
+        String payload = MossolJsonUtil.writeJsonToString(request);
         logger.debug("sendRequest Payload : {}", payload);
         retrofitConnection.sendReply(request);
         return true;
@@ -146,7 +144,7 @@ public class MossolLineController {
     public HttpResponse getLine(@Header("X-Line-Signature") String signature,
                                 @RequestObject JsonNode request) {
         logger.info("Request from LINE {}", request);
-        LineRequest requestObj = MossolUtil.readJsonString(request);
+        LineRequest requestObj = MossolJsonUtil.readJsonAsLineRequest(request);
 
         if (requestObj == null) {
             return null;
