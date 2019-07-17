@@ -63,7 +63,7 @@ public class MossolSlackController extends ReconnectableBot {
                 reply(session, event,
                       new Message(MessageBuildUtil.sendFoodMessage(replyMessage.getLocationInfo())));
                 return;
-            case LEAVE_ROOM:
+            case LEAVE_CHAT:
                 break;
             default:
                 reply(session, event, new Message(replyMessage.getText()));

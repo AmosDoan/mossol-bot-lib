@@ -67,7 +67,7 @@ public class MossolMessageController {
                 response = MossolUtil.writeJsonString(ret);
                 httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);
                 return httpResponse;
-            case LEAVE_ROOM:
+            case LEAVE_CHAT:
                 break;
             default:
                 ret.put("message", replyMessage.getText());

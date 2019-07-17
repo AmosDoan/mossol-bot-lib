@@ -62,8 +62,34 @@ public class MossolLineController {
         return true;
     }
 
-    private boolean leaveRoom(String groupId) {
-        retrofitConnection.leaveRoom(null, groupId);
+    private boolean leaveChat(String token, LineRequest.Source source, ReplyMessage replyMessage)
+            throws Exception {
+        String type = source.getType();
+        switch (type) {
+            case "user":
+                sendReply(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
+                break;
+            case "room":
+                leaveRoom(source.getRoomId());
+                break;
+            case "group":
+                leaveGroup(source.getGroupId());
+                break;
+            default:
+                logger.warn("Exception occured in source type", type);
+                throw new Exception("Given source type is invalid.");
+        }
+
+        return true;
+    }
+
+    private boolean leaveRoom(String roomId) {
+        retrofitConnection.leaveRoom(null, roomId);
+        return true;
+    }
+
+    private boolean leaveGroup(String groupId) {
+        retrofitConnection.leaveGroup(null, groupId);
         return true;
     }
 
@@ -98,15 +124,14 @@ public class MossolLineController {
 
         TextType type = replyMessage.getType();
 
-        switch(type) {
+        switch (type) {
             case SELECT_MENU_K:
             case SELECT_MENU_J:
             case SELECT_MENU_D:
                 sendFoodReply(token, replyMessage.getLocationInfo());
                 return;
-            case LEAVE_ROOM:
-                String groupId =  event.getSource().getGroupId();
-                leaveRoom(groupId);
+            case LEAVE_CHAT:
+                leaveChat(token, event.getSource(), replyMessage);
                 break;
             default:
                 sendReply(MessageBuildUtil.sendTextMessage(token, replyMessage.getText()));
@@ -127,19 +152,19 @@ public class MossolLineController {
             return null;
         }
 
-        if(!validateHeader(request.toString(), signature)) {
+        if (!validateHeader(request.toString(), signature)) {
             logger.debug("ERROR : Abusing API Call!");
             return null;
         }
 
         try {
             logger.debug("Logging : replyMessage {}", request);
-            LineRequest.Event event =  requestObj.getEvents().get(0);
+            LineRequest.Event event = requestObj.getEvents().get(0);
 
             if (event.getType().equals("message")) {
                 handleMessage(event);
             } else if (event.getType().equals("join")) {
-                String groupId =  event.getSource().getGroupId();
+                String groupId = event.getSource().getGroupId();
                 logger.debug("Join the group {}", groupId);
             }
 
@@ -154,7 +179,8 @@ public class MossolLineController {
             logger.debug("ERROR : {}", e);
         }
 
-        HttpResponse httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, requestObj.getEvents().toString());
+        HttpResponse httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8,
+                                                    requestObj.getEvents().toString());
         logger.debug("httpResponse <{}>", httpResponse);
         return httpResponse;
     }

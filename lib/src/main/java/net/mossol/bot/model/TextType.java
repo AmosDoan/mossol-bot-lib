@@ -8,7 +8,7 @@ public enum TextType {
     SELECT_MENU_K,
     SELECT_MENU_J,
     SELECT_MENU_D,
-    LEAVE_ROOM,
+    LEAVE_CHAT,
     ADD_MENU_K,
     ADD_MENU_J,
     ADD_MENU_D,
