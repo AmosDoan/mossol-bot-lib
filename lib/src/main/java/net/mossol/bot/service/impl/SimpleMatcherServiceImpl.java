@@ -1,6 +1,6 @@
 package net.mossol.bot.service.impl;
 
-import static net.mossol.bot.model.TextType.LEAVE_ROOM;
+import static net.mossol.bot.model.TextType.LEAVE_CHAT;
 import static net.mossol.bot.model.TextType.SELECT_MENU_D;
 import static net.mossol.bot.model.TextType.SELECT_MENU_J;
 import static net.mossol.bot.model.TextType.SELECT_MENU_K;
@@ -68,8 +68,8 @@ public class SimpleMatcherServiceImpl implements MatcherService {
                 return new ReplyMessage(SELECT_MENU_J, menuServiceHandler.selectMenu(FoodType.JAPAN_FOOD), null);
             case SELECT_MENU_D:
                 return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
-            case LEAVE_ROOM:
-                return new ReplyMessage(LEAVE_ROOM, null, null);
+            case LEAVE_CHAT:
+                return new ReplyMessage(LEAVE_CHAT, null, null);
         }
 
         logger.debug("There is no matched simple for the message : " + simpleText);

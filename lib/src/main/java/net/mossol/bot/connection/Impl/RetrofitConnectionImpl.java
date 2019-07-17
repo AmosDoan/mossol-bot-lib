@@ -46,8 +46,28 @@ public class RetrofitConnectionImpl implements RetrofitConnection {
     }
 
     @Override
-    public void leaveRoom(LineReplyRequest request, String groupId) {
-        retrofitClient.leaveRoom(groupId, "Bearer " + token, Collections.emptyMap()).whenComplete(
+    public void leaveRoom(LineReplyRequest request, String roomId) {
+        retrofitClient.leaveRoom(roomId, "Bearer " + token, Collections.emptyMap()).whenComplete(
+                (response , e) -> {
+                    if (e != null) {
+                        logger.warn("Got exception from LINE Bot Server! groupId<{}>,response<{}>",
+                                    roomId, response, e);
+                    }
+
+                    if (response.code() == 200) {
+                        logger.warn("Got success from LINE Bot Server! groupId<{}>,request<{}>,response<{}>",
+                                    roomId, request, response);
+                    } else {
+                        logger.warn("Got failure from LINE Bot Server! groupId<{}>,request<{}>,response<{}>",
+                                    roomId, request, response);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void leaveGroup(LineReplyRequest request, String groupId) {
+        retrofitClient.leaveGroup(groupId, "Bearer " + token, Collections.emptyMap()).whenComplete(
                 (response , e) -> {
                     if (e != null) {
                         logger.warn("Got exception from LINE Bot Server! groupId<{}>,response<{}>",
