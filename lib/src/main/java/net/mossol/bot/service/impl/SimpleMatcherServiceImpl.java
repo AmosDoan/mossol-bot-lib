@@ -69,7 +69,7 @@ public class SimpleMatcherServiceImpl implements MatcherService {
             case SELECT_MENU_D:
                 return new ReplyMessage(SELECT_MENU_D, menuServiceHandler.selectMenu(FoodType.DRINK_FOOD), null);
             case LEAVE_CHAT:
-                return new ReplyMessage(LEAVE_CHAT, null, null);
+                return new ReplyMessage(LEAVE_CHAT, null, simpleText.getResponse());
         }
 
         logger.debug("There is no matched simple for the message : " + simpleText);
