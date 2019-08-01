@@ -1,5 +1,5 @@
 # MOSSOL-BOT-LIB 
-[![Build Status](https://travis-ci.org/AmosDoan/line_bot_mossol.svg?branch=master)](https://travis-ci.org/AmosDoan/line_bot_mossol)
+[![Build Status](https://travis-ci.org/AmosDoan/mossol_bot_lib.svg?branch=master)](https://travis-ci.org/AmosDoan/mossol_bot_lib)
 
 * This project is started to support the integrated, cross platform Bot Framework.
 * Currently, we support LINE messenger & Slack
