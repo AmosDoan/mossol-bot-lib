@@ -15,12 +15,12 @@ import net.mossol.bot.connection.ToLocationInfoRequestConverter;
 import net.mossol.bot.model.LocationInfo;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
-import net.mossol.bot.repository.LocationInfoMongoDBRepository;
+import net.mossol.bot.service.MenuServiceHandler.FoodType;
 import net.mossol.bot.service.MessageHandler;
+import net.mossol.bot.storage.MenuStorageService;
 import net.mossol.bot.util.MessageBuildUtil;
 import net.mossol.bot.util.MossolJsonUtil;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,20 +46,17 @@ public class MossolMessageController {
     private MessageHandler messageHandler;
 
     @Resource
-    private LocationInfoMongoDBRepository locationInfoMongoDBRepository;
+    private MenuStorageService menuStorageService;
 
     @Get("/location")
     public HttpResponse getAllLocations() {
-        final List<LocationInfo> locationInfos = locationInfoMongoDBRepository.findAll();
-        final String locationInfoStr;
-        logger.info("Fetch LocationInfo : <{}>", locationInfos);
-        try {
-            locationInfoStr = objectMapper.writeValueAsString(locationInfos);
-        } catch (JsonProcessingException e) {
+        final List<LocationInfo> locationInfos = menuStorageService.getMenu();
+        final String locationInfoStr = MossolJsonUtil.writeJsonString(locationInfos);
+        if (locationInfoStr == null) {
             logger.warn("Failed to convert <{}> to Json string", locationInfos);
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+        logger.info("Fetch LocationInfo : <{}>", locationInfos);
         return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, locationInfoStr);
     }
 
@@ -69,9 +66,12 @@ public class MossolMessageController {
         LocationInfo locationInfoToAdd = new LocationInfo(location.getTitle(),
                                                           location.getLatitude(),
                                                           location.getLongitude());
-        LocationInfo ret = locationInfoMongoDBRepository.insert(locationInfoToAdd);
-        logger.debug("add location; id <{}> locationInfo <{}> ", ret.getId(), ret);
-        return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{ \"id \" : \"%s\" }", ret.getId());
+        String locationId = menuStorageService.addMenu(FoodType.KOREA_FOOD, locationInfoToAdd);
+        if (locationId == null) {
+            return HttpResponse.of(HttpStatus.BAD_REQUEST);
+        } else {
+            return HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, "{ \"id \" : \"%s\" }", locationId);
+        }
     }
 
     @Put("/location/{id}")
@@ -79,8 +79,7 @@ public class MossolMessageController {
     public HttpResponse updateLocation(@Param("id") String id, LocationInfo location) {
         logger.debug("update location; id <{}> locationInfo <{}> ", id, location);
 
-        if (locationInfoMongoDBRepository.existsById(id)) {
-            locationInfoMongoDBRepository.save(location);
+        if (menuStorageService.updateMenu(id, location)) {
             return HttpResponse.of(HttpStatus.OK);
         }
 
@@ -90,9 +89,10 @@ public class MossolMessageController {
     @Delete("/location/{id}")
     @RequestConverter(ToLocationInfoRequestConverter.class)
     public HttpResponse deleteLocation(@Param("id") String id, LocationInfo location) {
-        logger.debug("delete location; id <{}> locationInfo <{}> ", id, location);
-        locationInfoMongoDBRepository.deleteById(id);
-        return HttpResponse.of(HttpStatus.OK);
+        if (menuStorageService.removeMenu(FoodType.KOREA_FOOD, location)) {
+            return HttpResponse.of(HttpStatus.OK);
+        }
+        return HttpResponse.of(HttpStatus.BAD_REQUEST);
     }
 
     @Post("/getMessage")

@@ -15,11 +15,13 @@ import net.mossol.bot.model.LocationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
+@Slf4j
 public final class MossolJsonUtil {
-    private static final Logger logger = LoggerFactory.getLogger(MossolJsonUtil.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static Map<String, LocationInfo> convertToMenuInfo(JsonNode jsonNode) {
@@ -28,7 +30,7 @@ public final class MossolJsonUtil {
                                                               new TypeReference<List<LocationInfo>>(){});
             return info.stream().collect(Collectors.toMap(LocationInfo::getTitle, Function.identity()));
         } catch (IOException e) {
-            logger.error("Converting Json to LocationInfo Map Failed", e);
+            log.error("Converting Json to LocationInfo Map Failed", e);
             return null;
         }
     }
@@ -39,7 +41,7 @@ public final class MossolJsonUtil {
             request = OBJECT_MAPPER.treeToValue(jsonNode, LineRequest.class);
             return request;
         } catch (Exception e) {
-            logger.debug("[ERROR] Converting to object failed. Received Json String <{}>  cause : <{}>",
+            log.debug("[ERROR] Converting to object failed. Received Json String <{}>  cause : <{}>",
                          jsonNode,
                          e.getMessage());
             return null;
@@ -53,6 +55,7 @@ public final class MossolJsonUtil {
             }
             return OBJECT_MAPPER.writeValueAsString(obj);
         } catch (Exception e) {
+            log.error("Converting Json to Map Failed");
             return null;
         }
     }
