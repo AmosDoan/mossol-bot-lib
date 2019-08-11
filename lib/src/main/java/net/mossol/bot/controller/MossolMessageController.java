@@ -15,7 +15,6 @@ import net.mossol.bot.connection.LocationInfoRequestConverter;
 import net.mossol.bot.model.LocationInfo;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
-import net.mossol.bot.model.MenuType;
 import net.mossol.bot.service.MessageHandler;
 import net.mossol.bot.storage.MenuStorageService;
 import net.mossol.bot.util.MessageBuildUtil;
@@ -46,7 +45,7 @@ public class MossolMessageController {
 
     @Get("/location")
     public HttpResponse getAllLocations() {
-        final List<LocationInfo> locationInfos = menuStorageService.getMenu();
+        final List<LocationInfo> locationInfos = menuStorageService.getAllLocationInfoList();
         final String locationInfoStr = MossolJsonUtil.writeJsonToString(locationInfos);
         if (locationInfoStr == null) {
             logger.warn("Failed to convert <{}> to Json string", locationInfos);
@@ -63,7 +62,7 @@ public class MossolMessageController {
                                                           location.getLatitude(),
                                                           location.getLongitude(),
                                                           location.getType());
-        String locationId = menuStorageService.addMenu(MenuType.KOREA_MENU, locationInfoToAdd);
+        String locationId = menuStorageService.addLocationInfo(locationInfoToAdd);
         if (locationId == null) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST);
         } else {
@@ -76,7 +75,7 @@ public class MossolMessageController {
     public HttpResponse updateLocation(@Param("id") String id, LocationInfo location) {
         logger.debug("update location; id <{}> locationInfo <{}> ", id, location);
 
-        if (menuStorageService.updateMenu(id, location)) {
+        if (menuStorageService.updateLocationInfo(id, location)) {
             return HttpResponse.of(HttpStatus.OK);
         }
 
@@ -86,7 +85,7 @@ public class MossolMessageController {
     @Delete("/location/{id}")
     @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse deleteLocation(@Param("id") String id, LocationInfo location) {
-        if (menuStorageService.removeMenu(MenuType.KOREA_MENU, location)) {
+        if (menuStorageService.removeLocationInfo(location)) {
             return HttpResponse.of(HttpStatus.OK);
         }
         return HttpResponse.of(HttpStatus.BAD_REQUEST);

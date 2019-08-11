@@ -38,8 +38,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
 
     @Override
     public String getMenu(MenuType type) {
-        log.debug("getMenu");
-        Set<String> menu = menuStorageService.getMenu(type)
+        Set<String> menu = menuStorageService.getMenuList(type)
                                              .entrySet().stream().map(e -> e.getValue().getTitle())
                                              .collect(Collectors.toSet());
         String msg = String.format(MENU_FORMAT, String.join("\n", menu));
@@ -51,7 +50,7 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     @Override
     public LocationInfo selectMenu(MenuType type) {
         log.debug("selectMenu");
-        Map<String, LocationInfo> menu = menuStorageService.getMenu(type);
+        Map<String, LocationInfo> menu = menuStorageService.getMenuList(type);
         int idx = (random.nextInt() & Integer.MAX_VALUE) % menu.size();
 
         log.debug("idx: {} Selected Menu : {}", idx, menu.keySet());
@@ -84,8 +83,8 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     }
 
     @Override
-    public String removeMenu(List<String> foods, MenuType type) {
-        final String food = foods.get(0);
+    public String removeMenu(List<String> menus, MenuType type) {
+        final String food = menus.get(0);
 
         log.debug("remove Menu : " + food);
         if (food.isEmpty()) {

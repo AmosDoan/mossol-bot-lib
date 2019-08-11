@@ -8,17 +8,17 @@ import net.mossol.bot.model.MenuType;
 
 public interface MenuStorageService {
 
-    Map<String, LocationInfo> getMenu(MenuType type);
+    Map<String, LocationInfo> getMenuList(MenuType type);
 
-    List<LocationInfo> getMenu();
+    List<LocationInfo> getAllLocationInfoList();
 
     boolean removeMenu(MenuType menuType, String food);
 
-    boolean removeMenu(MenuType menuType, LocationInfo locationInfo);
+    boolean removeLocationInfo(LocationInfo locationInfo);
 
     boolean addMenu(MenuType menuType, String food);
 
-    String addMenu(MenuType menuType, LocationInfo locationInfo);
+    String addLocationInfo(LocationInfo locationInfo);
 
-    boolean updateMenu(String locationId, LocationInfo locationInfo);
+    boolean updateLocationInfo(String locationId, LocationInfo locationInfo);
 }
