@@ -10,7 +10,7 @@ import com.linecorp.armeria.common.AggregatedHttpMessage;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.annotation.RequestConverterFunction;
 
-public class ToLocationInfoRequestConverter implements RequestConverterFunction {
+public class LocationInfoRequestConverter implements RequestConverterFunction {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

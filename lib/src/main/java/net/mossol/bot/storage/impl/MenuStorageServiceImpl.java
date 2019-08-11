@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 import net.mossol.bot.model.LocationInfo;
 import net.mossol.bot.repository.LocationInfoMongoDBRepository;
-import net.mossol.bot.service.MenuServiceHandler.FoodType;
+import net.mossol.bot.model.MenuType;
 import net.mossol.bot.storage.MenuStorageService;
 import net.mossol.bot.util.MossolJsonUtil;
 
@@ -42,15 +42,15 @@ public class MenuStorageServiceImpl implements MenuStorageService {
                                         "브라운돈까스", "차슈멘연구소", "유타로", "짬뽕", "쉑쉑버거", "하야시라이스", "보쌈", "하치돈부리",
                                         "홍대개미", "B사감", "콩나물국밥", "순대국밥", "김치찜", "화수목"))
                     .stream()
-                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1)));
+                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1, MenuType.KOREA_MENU)));
     private static final Map<String, LocationInfo> japanDefaultCandidate =
             new HashSet<>(Arrays.asList("규카츠", "스시", "라멘", "돈카츠", "꼬치", "덴뿌라", "쉑쉑버거", "카레"))
                     .stream()
-                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1)));
+                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1, MenuType.JAPAN_MENU)));
     private static final Map<String, LocationInfo> drinkDefaultCandidate =
             new HashSet<>(Arrays.asList("하누비노"))
                     .stream()
-                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1)));
+                    .collect(Collectors.toMap(e -> e, e -> new LocationInfo(e, -1, -1, MenuType.KOREA_DRINK_MENU)));
 
     @Resource
     private CentralDogma centralDogma;
@@ -110,13 +110,13 @@ public class MenuStorageServiceImpl implements MenuStorageService {
     }
 
     @Override
-    public Map<String, LocationInfo> getMenu(FoodType type) {
+    public Map<String, LocationInfo> getMenu(MenuType type) {
         switch (type) {
-            case JAPAN_FOOD:
+            case JAPAN_MENU:
                 return japanMenu;
-            case KOREA_FOOD:
+            case KOREA_MENU:
                 return koreaMenu;
-            case DRINK_FOOD:
+            case KOREA_DRINK_MENU:
                 return drinkMenu;
             default:
                 return koreaMenu;
@@ -135,26 +135,26 @@ public class MenuStorageServiceImpl implements MenuStorageService {
     }
 
     @Override
-    public boolean removeMenu(FoodType foodType, String food) {
-        Map<String, LocationInfo> menu = getMenu(foodType);
+    public boolean removeMenu(MenuType menuType, String food) {
+        Map<String, LocationInfo> menu = getMenu(menuType);
         if (!menu.containsKey(food)) {
             return false;
         }
 
         LocationInfo locationInfo = menu.remove(food);
 
-        if (foodType == FoodType.KOREA_FOOD) {
+        if (menuType == MenuType.KOREA_MENU) {
             removeMenuFromMongoDB(locationInfo);
         } else {
-            addMenuToCentralDogma(menu, foodType);
+            addMenuToCentralDogma(menu, menuType);
         }
 
         return true;
     }
 
     @Override
-    public boolean removeMenu(FoodType foodType, LocationInfo locationInfo) {
-        Map<String, LocationInfo> menu = getMenu(foodType);
+    public boolean removeMenu(MenuType menuType, LocationInfo locationInfo) {
+        Map<String, LocationInfo> menu = getMenu(menuType);
         String food = locationInfo.getTitle();
         if (!menu.containsKey(food)) {
             return false;
@@ -176,20 +176,20 @@ public class MenuStorageServiceImpl implements MenuStorageService {
         return ret.getId();
     }
 
-    private void addMenuToCentralDogma(Map<String, LocationInfo> menu, FoodType foodType) {
-        String jsonMenu = MossolJsonUtil.writeJsonString(menu.entrySet().stream()
-                                                             .map(Map.Entry::getValue)
-                                                             .collect(Collectors.toList()));
+    private void addMenuToCentralDogma(Map<String, LocationInfo> menu, MenuType menuType) {
+        String jsonMenu = MossolJsonUtil.writeJsonToString(menu.entrySet().stream()
+                                                               .map(Map.Entry::getValue)
+                                                               .collect(Collectors.toList()));
         if (jsonMenu == null) {
             return;
         }
 
         String jsonPath = null;
-        switch(foodType) {
-            case JAPAN_FOOD:
+        switch(menuType) {
+            case JAPAN_MENU:
                 jsonPath = "/japanMenu.json";
                 break;
-            case DRINK_FOOD:
+            case KOREA_DRINK_MENU:
                 jsonPath = "/drinkMenu.json";
                 break;
         }
@@ -214,27 +214,27 @@ public class MenuStorageServiceImpl implements MenuStorageService {
     }
 
     @Override
-    public boolean addMenu(FoodType foodType, String food) {
-        Map<String, LocationInfo> menu = getMenu(foodType);
+    public boolean addMenu(MenuType menuType, String food) {
+        Map<String, LocationInfo> menu = getMenu(menuType);
         if (menu.containsKey(food)) {
             return false;
         }
 
-        LocationInfo locationInfo = new LocationInfo(food, -1, -1);
+        LocationInfo locationInfo = new LocationInfo(food, -1, -1, menuType);
         menu.put(food, locationInfo);
 
-        if (foodType == FoodType.KOREA_FOOD) {
+        if (menuType == MenuType.KOREA_MENU) {
             addMenuToMongoDB(locationInfo);
         } else {
-            addMenuToCentralDogma(menu, foodType);
+            addMenuToCentralDogma(menu, menuType);
         }
 
         return true;
     }
 
     @Override
-    public String addMenu(FoodType foodType, LocationInfo locationInfo) {
-        Map<String, LocationInfo> menu = getMenu(foodType);
+    public String addMenu(MenuType menuType, LocationInfo locationInfo) {
+        Map<String, LocationInfo> menu = getMenu(menuType);
         String food = locationInfo.getTitle();
 
         if (menu.containsKey(food)) {

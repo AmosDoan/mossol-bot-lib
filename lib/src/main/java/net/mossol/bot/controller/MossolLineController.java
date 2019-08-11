@@ -54,7 +54,7 @@ public class MossolLineController {
     }
 
     private boolean sendReply(LineReplyRequest request) {
-        String payload = MossolJsonUtil.writeJsonString(request);
+        String payload = MossolJsonUtil.writeJsonToString(request);
         logger.debug("sendRequest Payload : {}", payload);
         retrofitConnection.sendReply(request);
         return true;
@@ -144,7 +144,7 @@ public class MossolLineController {
     public HttpResponse getLine(@Header("X-Line-Signature") String signature,
                                 @RequestObject JsonNode request) {
         logger.info("Request from LINE {}", request);
-        LineRequest requestObj = MossolJsonUtil.readJsonString(request);
+        LineRequest requestObj = MossolJsonUtil.readJsonAsLineRequest(request);
 
         if (requestObj == null) {
             return null;

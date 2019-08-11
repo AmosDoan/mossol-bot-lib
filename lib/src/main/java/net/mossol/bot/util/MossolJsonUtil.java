@@ -35,7 +35,7 @@ public final class MossolJsonUtil {
         }
     }
 
-    public static LineRequest readJsonString(JsonNode jsonNode) {
+    public static LineRequest readJsonAsLineRequest(JsonNode jsonNode) {
         try {
             LineRequest request;
             request = OBJECT_MAPPER.treeToValue(jsonNode, LineRequest.class);
@@ -48,7 +48,7 @@ public final class MossolJsonUtil {
         }
     }
 
-    public static String writeJsonString(Object obj) {
+    public static String writeJsonToString(Object obj) {
         try {
             if (obj == null) {
                 return null;

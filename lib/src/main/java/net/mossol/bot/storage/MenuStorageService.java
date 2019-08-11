@@ -4,21 +4,21 @@ import java.util.List;
 import java.util.Map;
 
 import net.mossol.bot.model.LocationInfo;
-import net.mossol.bot.service.MenuServiceHandler.FoodType;
+import net.mossol.bot.model.MenuType;
 
 public interface MenuStorageService {
 
-    Map<String, LocationInfo> getMenu(FoodType type);
+    Map<String, LocationInfo> getMenu(MenuType type);
 
     List<LocationInfo> getMenu();
 
-    boolean removeMenu(FoodType foodType, String food);
+    boolean removeMenu(MenuType menuType, String food);
 
-    boolean removeMenu(FoodType foodType, LocationInfo locationInfo);
+    boolean removeMenu(MenuType menuType, LocationInfo locationInfo);
 
-    boolean addMenu(FoodType foodType, String food);
+    boolean addMenu(MenuType menuType, String food);
 
-    String addMenu(FoodType foodType, LocationInfo locationInfo);
+    String addMenu(MenuType menuType, LocationInfo locationInfo);
 
     boolean updateMenu(String locationId, LocationInfo locationInfo);
 }

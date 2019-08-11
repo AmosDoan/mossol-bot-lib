@@ -11,18 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import net.mossol.bot.connection.ToLocationInfoRequestConverter;
+import net.mossol.bot.connection.LocationInfoRequestConverter;
 import net.mossol.bot.model.LocationInfo;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.model.TextType;
-import net.mossol.bot.service.MenuServiceHandler.FoodType;
+import net.mossol.bot.model.MenuType;
 import net.mossol.bot.service.MessageHandler;
 import net.mossol.bot.storage.MenuStorageService;
 import net.mossol.bot.util.MessageBuildUtil;
 import net.mossol.bot.util.MossolJsonUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
@@ -40,9 +39,6 @@ public class MossolMessageController {
     private static final Logger logger = LoggerFactory.getLogger(MossolMessageController.class);
 
     @Resource
-    private ObjectMapper objectMapper;
-
-    @Resource
     private MessageHandler messageHandler;
 
     @Resource
@@ -51,7 +47,7 @@ public class MossolMessageController {
     @Get("/location")
     public HttpResponse getAllLocations() {
         final List<LocationInfo> locationInfos = menuStorageService.getMenu();
-        final String locationInfoStr = MossolJsonUtil.writeJsonString(locationInfos);
+        final String locationInfoStr = MossolJsonUtil.writeJsonToString(locationInfos);
         if (locationInfoStr == null) {
             logger.warn("Failed to convert <{}> to Json string", locationInfos);
             return HttpResponse.of(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,12 +57,13 @@ public class MossolMessageController {
     }
 
     @Post("/location")
-    @RequestConverter(ToLocationInfoRequestConverter.class)
+    @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse addLocation(LocationInfo location) {
         LocationInfo locationInfoToAdd = new LocationInfo(location.getTitle(),
                                                           location.getLatitude(),
-                                                          location.getLongitude());
-        String locationId = menuStorageService.addMenu(FoodType.KOREA_FOOD, locationInfoToAdd);
+                                                          location.getLongitude(),
+                                                          location.getType());
+        String locationId = menuStorageService.addMenu(MenuType.KOREA_MENU, locationInfoToAdd);
         if (locationId == null) {
             return HttpResponse.of(HttpStatus.BAD_REQUEST);
         } else {
@@ -75,7 +72,7 @@ public class MossolMessageController {
     }
 
     @Put("/location/{id}")
-    @RequestConverter(ToLocationInfoRequestConverter.class)
+    @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse updateLocation(@Param("id") String id, LocationInfo location) {
         logger.debug("update location; id <{}> locationInfo <{}> ", id, location);
 
@@ -87,9 +84,9 @@ public class MossolMessageController {
     }
 
     @Delete("/location/{id}")
-    @RequestConverter(ToLocationInfoRequestConverter.class)
+    @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse deleteLocation(@Param("id") String id, LocationInfo location) {
-        if (menuStorageService.removeMenu(FoodType.KOREA_FOOD, location)) {
+        if (menuStorageService.removeMenu(MenuType.KOREA_MENU, location)) {
             return HttpResponse.of(HttpStatus.OK);
         }
         return HttpResponse.of(HttpStatus.BAD_REQUEST);
@@ -112,7 +109,7 @@ public class MossolMessageController {
             }
         } catch (Exception e) {
             httpResponse = HttpResponse.of(HttpStatus.NOT_FOUND, MediaType.JSON_UTF_8, MossolJsonUtil
-                    .writeJsonString(Collections.emptyMap()));
+                    .writeJsonToString(Collections.emptyMap()));
             logger.debug("httpResponse <{}>", httpResponse);
             return httpResponse;
         }
@@ -126,14 +123,14 @@ public class MossolMessageController {
             case SELECT_MENU_D:
                 final String foodMessage = MessageBuildUtil.sendFoodMessage(replyMessage.getLocationInfo());
                 ret.put("message", foodMessage);
-                response = MossolJsonUtil.writeJsonString(ret);
+                response = MossolJsonUtil.writeJsonToString(ret);
                 httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);
                 return httpResponse;
             case LEAVE_CHAT:
                 break;
             default:
                 ret.put("message", replyMessage.getText());
-                response = MossolJsonUtil.writeJsonString(ret);
+                response = MossolJsonUtil.writeJsonToString(ret);
                 httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8, response);
                 return httpResponse;
         }

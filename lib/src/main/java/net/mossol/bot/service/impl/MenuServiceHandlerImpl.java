@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import net.mossol.bot.model.LocationInfo;
+import net.mossol.bot.model.MenuType;
 import net.mossol.bot.service.MenuServiceHandler;
 import net.mossol.bot.storage.MenuStorageService;
 
@@ -23,13 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class MenuServiceHandlerImpl implements MenuServiceHandler {
-    private static final String menuFormat = "메뉴 리스트는 다음과 같아요 멍\n%s";
-
-    private static final String addFormat = "멍멍 %s 추가합니다";
-    private static final String removeFormat = "멍멍 %s 가지마세요! 가면 깨뭅니다";
-    private static final String removeFail = "멍멍 그런 메뉴 없어요";
-    private static final String alreadyExistMenu = "멍멍 이미 있는 곳이에요";
-    private static final String addFail = "왈왈! 추가 실패!!";
+    private static final String MENU_FORMAT = "메뉴 리스트는 다음과 같아요 멍\n%s";
+    private static final String MENU_ADDED_FORMAT = "멍멍 %s 추가합니다";
+    private static final String MENU_REMOVED_FORMAT = "멍멍 %s 가지마세요! 가면 깨뭅니다";
+    private static final String FAIL_REMOVE_MENU = "멍멍 그런 메뉴 없어요";
+    private static final String ALREADY_EXIST_MENU = "멍멍 이미 있는 곳이에요";
+    private static final String FAIL_ADD_MENU = "왈왈! 추가 실패!!";
 
     private final Random random = new Random();
 
@@ -37,19 +37,19 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     private MenuStorageService menuStorageService;
 
     @Override
-    public String getMenu(FoodType type) {
+    public String getMenu(MenuType type) {
         log.debug("getMenu");
         Set<String> menu = menuStorageService.getMenu(type)
                                              .entrySet().stream().map(e -> e.getValue().getTitle())
                                              .collect(Collectors.toSet());
-        String msg = String.format(menuFormat, String.join("\n", menu));
+        String msg = String.format(MENU_FORMAT, String.join("\n", menu));
         log.debug("DEBUG : {}", msg);
         return msg;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public LocationInfo selectMenu(FoodType type) {
+    public LocationInfo selectMenu(MenuType type) {
         log.debug("selectMenu");
         Map<String, LocationInfo> menu = menuStorageService.getMenu(type);
         int idx = (random.nextInt() & Integer.MAX_VALUE) % menu.size();
@@ -66,37 +66,37 @@ public class MenuServiceHandlerImpl implements MenuServiceHandler {
     }
 
     @Override
-    public String addMenu(List<String> foods, FoodType type) {
+    public String addMenu(List<String> foods, MenuType type) {
         final String food = foods.get(0);
 
         log.debug("addMenu : " + food);
         if (food.isEmpty()) {
-            return addFail;
+            return FAIL_ADD_MENU;
         }
 
         if (!menuStorageService.addMenu(type, food)) {
-            return alreadyExistMenu;
+            return ALREADY_EXIST_MENU;
         }
 
-        String msg = String.format(addFormat, food);
+        String msg = String.format(MENU_ADDED_FORMAT, food);
         log.debug("DEBUG : {}", msg);
         return msg;
     }
 
     @Override
-    public String removeMenu(List<String> foods, FoodType type) {
+    public String removeMenu(List<String> foods, MenuType type) {
         final String food = foods.get(0);
 
         log.debug("remove Menu : " + food);
         if (food.isEmpty()) {
-            return removeFail;
+            return FAIL_REMOVE_MENU;
         }
 
         if (!menuStorageService.removeMenu(type, food)) {
-            return removeFail;
+            return FAIL_REMOVE_MENU;
         }
 
-        String msg = String.format(removeFormat, food);
+        String msg = String.format(MENU_REMOVED_FORMAT, food);
         log.debug("DEBUG : {}", msg);
         return msg;
     }
