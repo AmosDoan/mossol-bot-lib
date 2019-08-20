@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -46,10 +49,13 @@ public class MenuStorageServiceImpl implements MenuStorageService {
     @Resource
     private LocationInfoMongoDBRepository locationInfoMongoDBRepository;
 
+    @Resource
+    private MongoTemplate mongoTemplate;
+
     private Map<String, LocationInfo> loadMenuByType(List<LocationInfo> menuList, MenuType menuType) {
         Map<String, LocationInfo> menu =
                 menuList.stream().filter(e -> e.getType() == menuType)
-                        .collect(Collectors.toMap(LocationInfo::getTitle, Function.identity()));
+                        .collect(Collectors.toMap(LocationInfo::getTitle, Function.identity(), (p1, p2) -> p2));
 
         if (CollectionUtils.isEmpty(menu)) {
             log.info("Failed fetch menuType <{}> from MongoDB; Set the Default Menu", menuType);
@@ -176,11 +182,19 @@ public class MenuStorageServiceImpl implements MenuStorageService {
 
     @Override
     public boolean updateLocationInfo(String locationId, LocationInfo locationInfo) {
-        if (!locationInfoMongoDBRepository.existsById(locationId)) {
+        Map<String, LocationInfo> menu = getMenuList(locationInfo.getType());
+        LocationInfo oldLocation =
+                mongoTemplate.findOne(Query.query(Criteria.where("id").is(locationId)), LocationInfo.class);
+
+        if (oldLocation == null) {
             return false;
         }
 
-        locationInfoMongoDBRepository.save(locationInfo);
-        return false;
+        menu.remove(oldLocation.getTitle());
+        menu.put(locationInfo.getTitle(), locationInfo);
+
+        oldLocation.setTitle(locationInfo.getTitle());
+        mongoTemplate.save(oldLocation);
+        return true;
     }
 }
