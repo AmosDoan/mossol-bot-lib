@@ -1,15 +1,11 @@
 spring:
   profiles:
     active: local
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017
-      database: mossol
 
 server:
   port: 8181
 
-# slack integration
+# slack integrations
 rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
 slackBotToken: <defined as environment variable in the production machine>
 slackApi: https://slack.com/api

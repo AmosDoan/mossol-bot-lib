@@ -23,7 +23,7 @@ import net.mossol.bot.model.RegexText;
 import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.service.MatcherService;
 import net.mossol.bot.service.MenuServiceHandler;
-import net.mossol.bot.model.MenuType;
+import net.mossol.bot.service.MenuServiceHandler.FoodType;
 
 import com.linecorp.centraldogma.client.Watcher;
 
@@ -59,22 +59,22 @@ public class RegexMatcherServiceImpl implements MatcherService {
                 switch (regex.getType()) {
                     case ADD_MENU_K:
                         return new ReplyMessage(ADD_MENU_K, null,
-                                                menuServiceHandler.addMenu(result, MenuType.KOREA_MENU));
+                                                menuServiceHandler.addMenu(result, FoodType.KOREA_FOOD));
                     case ADD_MENU_J:
                         return new ReplyMessage(ADD_MENU_J, null,
-                                                menuServiceHandler.addMenu(result, MenuType.JAPAN_MENU));
+                                                menuServiceHandler.addMenu(result, FoodType.JAPAN_FOOD));
                     case ADD_MENU_D:
                         return new ReplyMessage(ADD_MENU_D, null,
-                                                menuServiceHandler.addMenu(result, MenuType.KOREA_DRINK_MENU));
+                                                menuServiceHandler.addMenu(result, FoodType.DRINK_FOOD));
                     case DEL_MENU_K:
                         return new ReplyMessage(DEL_MENU_K, null,
-                                                menuServiceHandler.removeMenu(result, MenuType.KOREA_MENU));
+                                                menuServiceHandler.removeMenu(result, FoodType.KOREA_FOOD));
                     case DEL_MENU_J:
                         return new ReplyMessage(DEL_MENU_J, null,
-                                                menuServiceHandler.removeMenu(result, MenuType.JAPAN_MENU));
+                                                menuServiceHandler.removeMenu(result, FoodType.JAPAN_FOOD));
                     case DEL_MENU_D:
                         return new ReplyMessage(DEL_MENU_D, null,
-                                                menuServiceHandler.removeMenu(result, MenuType.KOREA_DRINK_MENU));
+                                                menuServiceHandler.removeMenu(result, FoodType.DRINK_FOOD));
                     case TEXT:
                         return new ReplyMessage(TEXT, null, regex.getResponse());
                 }

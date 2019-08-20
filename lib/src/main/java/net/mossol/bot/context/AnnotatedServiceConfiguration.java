@@ -10,8 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.linecorp.armeria.common.HttpMethod;
-import com.linecorp.armeria.server.cors.CorsServiceBuilder;
 import com.linecorp.armeria.spring.AnnotatedServiceRegistrationBean;
 import com.linecorp.armeria.spring.ArmeriaServerConfigurator;
 
@@ -55,14 +53,8 @@ public class AnnotatedServiceConfiguration {
 
     @Bean
     public ArmeriaServerConfigurator armeriaServerConfigurator() {
-        return serverBuilder -> {
+        return serverBuilder ->
             serverBuilder.accessLogFormat("%h %l %u %t '%r' %s %b '%{X-Forwarded-For}i' '%{Referer}i'"
                                           + " '%{User-Agent}i' '%{Cookie}i'");
-            serverBuilder.decorator(
-                    CorsServiceBuilder.forAnyOrigin()
-                                      .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.DELETE)
-                                      .newDecorator()
-            );
-        };
     }
 }

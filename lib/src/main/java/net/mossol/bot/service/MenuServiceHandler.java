@@ -1,7 +1,6 @@
 package net.mossol.bot.service;
 
 import net.mossol.bot.model.LocationInfo;
-import net.mossol.bot.model.MenuType;
 
 import java.util.List;
 
@@ -10,8 +9,14 @@ import java.util.List;
  */
 public interface MenuServiceHandler {
 
-    String getMenu(MenuType type);
-    LocationInfo selectMenu(MenuType type);
-    String addMenu(List<String> food, MenuType type);
-    String removeMenu(List<String> food, MenuType type);
+    enum FoodType {
+        KOREA_FOOD,
+        JAPAN_FOOD,
+        DRINK_FOOD
+    }
+
+    String getMenu(FoodType type);
+    LocationInfo selectMenu(FoodType type);
+    String addMenu(List<String> food, FoodType type);
+    String removeMenu(List<String> food, FoodType type);
 }
