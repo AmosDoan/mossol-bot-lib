@@ -60,7 +60,8 @@ public class AnnotatedServiceConfiguration {
                                           + " '%{User-Agent}i' '%{Cookie}i'");
             serverBuilder.decorator(
                     CorsServiceBuilder.forAnyOrigin()
-                                      .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.DELETE)
+                                      .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT,
+                                                           HttpMethod.DELETE)
                                       .newDecorator()
             );
         };
