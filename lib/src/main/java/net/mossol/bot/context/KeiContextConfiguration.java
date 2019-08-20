@@ -20,7 +20,7 @@ import com.linecorp.centraldogma.common.Query;
 
 @Configuration
 public class KeiContextConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(MenuContextConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(KeiContextConfiguration.class);
     private static final String CENTRAL_DOGMA_PROJECT = "mossol";
     private static final String CENTRAL_DOGMA_REPOSITORY = "main";
 
