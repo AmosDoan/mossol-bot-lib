@@ -58,6 +58,7 @@ public class MossolMessageController {
     @Post("/location")
     @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse addLocation(LocationInfo location) {
+        logger.info("add LocationInfo : <{}>", location);
         LocationInfo locationInfoToAdd = new LocationInfo(location.getTitle(),
                                                           location.getLatitude(),
                                                           location.getLongitude(),
@@ -73,7 +74,7 @@ public class MossolMessageController {
     @Put("/location/{id}")
     @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse updateLocation(@Param("id") String id, LocationInfo location) {
-        logger.debug("update location; id <{}> locationInfo <{}> ", id, location);
+        logger.info("update location; id <{}> locationInfo <{}> ", id, location);
 
         if (menuStorageService.updateLocationInfo(id, location)) {
             return HttpResponse.of(HttpStatus.OK);
@@ -85,6 +86,7 @@ public class MossolMessageController {
     @Delete("/location/{id}")
     @RequestConverter(LocationInfoRequestConverter.class)
     public HttpResponse deleteLocation(@Param("id") String id, LocationInfo location) {
+        logger.info("delete location; id <{}> locationInfo <{}> ", id, location);
         if (menuStorageService.removeLocationInfo(location)) {
             return HttpResponse.of(HttpStatus.OK);
         }
