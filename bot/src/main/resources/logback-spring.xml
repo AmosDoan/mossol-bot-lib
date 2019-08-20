@@ -64,6 +64,9 @@
     <root level="INFO">
       <appender-ref ref="STDOUT" />
     </root>
+    <logger name="net.mossol" level="DEBUG">
+      <appender-ref ref="STDOUT" />
+    </logger>
   </springProfile>
 
   <springProfile name="beta">
