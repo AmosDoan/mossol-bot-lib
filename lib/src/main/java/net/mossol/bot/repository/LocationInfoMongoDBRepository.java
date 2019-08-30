@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import net.mossol.bot.model.LocationInfo;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface LocationInfoMongoDBRepository extends MongoRepository<LocationInfo, String> {
     @Override
     List<LocationInfo> findAll();
