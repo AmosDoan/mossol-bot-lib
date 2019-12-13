@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import net.mossol.bot.model.RegexText;
 import net.mossol.bot.model.ReplyMessage;
@@ -86,6 +87,10 @@ public class RegexMatcherServiceImpl implements MatcherService {
 
     @Override
     public ReplyMessage match(String requestMessage) {
+        if (StringUtils.isEmpty(requestMessage)) {
+            return null;
+        }
+
         return regexTextHandle(requestMessage.replaceAll("\\s+", ""));
     }
 }
