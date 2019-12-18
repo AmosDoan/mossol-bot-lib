@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.mossol.bot.model.LineRequest;
@@ -22,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class MossolJsonUtil {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER =
+            new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
     public static Map<String, LocationInfo> convertToMenuInfo(JsonNode jsonNode) {
         try {
