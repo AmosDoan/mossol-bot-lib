@@ -16,4 +16,8 @@ dependencies {
     // Slack Bot
     implementation group: 'me.ramswaroop.jbot', name: 'jbot'
     implementation(group: 'javax.websocket', name: 'javax.websocket-api')
+
+    // Lombok
+    compile group: 'org.projectlombok', name: 'lombok'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok'
 }

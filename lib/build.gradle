@@ -9,10 +9,10 @@ dependencies {
 
     // Armeria
     compile group: 'com.linecorp.armeria', name: 'armeria'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-starter'
-    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot-autoconfigure'
+    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot2-starter'
+    compile group: 'com.linecorp.armeria', name: 'armeria-spring-boot2-autoconfigure'
     compile group: 'com.linecorp.armeria', name: 'armeria-retrofit2'
-    testImplementation(group: 'com.linecorp.armeria', name: 'armeria-testing')
+    testImplementation(group: 'com.linecorp.armeria', name: 'armeria-junit5')
 
     // Central Dogma
     compile group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
@@ -34,4 +34,7 @@ dependencies {
     // SSL
     compile group: 'org.eclipse.jetty', name: 'jetty-alpn-conscrypt-client'
     testImplementation group: 'org.wildfly.openssl', name: 'wildfly-openssl'
+
+    // Guava
+    compile group: 'com.google.guava', name: 'guava'
 }

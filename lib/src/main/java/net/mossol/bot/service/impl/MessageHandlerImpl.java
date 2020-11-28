@@ -12,6 +12,8 @@ import net.mossol.bot.model.ReplyMessage;
 import net.mossol.bot.service.MatcherService;
 import net.mossol.bot.service.MessageHandler;
 
+import io.micrometer.core.instrument.util.StringUtils;
+
 /**
  * Created by Amos.Doan.Mac on 2017. 12. 6..
  */
@@ -24,6 +26,10 @@ public class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public ReplyMessage replyMessage(String requestMessage) throws Exception {
+        if (StringUtils.isEmpty(requestMessage)) {
+            return null;
+        }
+
         for (MatcherService service : matcherServices) {
             ReplyMessage replyMessage = service.match(requestMessage);
             if (replyMessage != null) {

@@ -12,13 +12,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.linecorp.armeria.client.ClientFactory;
-import com.linecorp.armeria.client.ClientFactoryBuilder;
-import com.linecorp.armeria.client.retrofit2.ArmeriaRetrofitBuilder;
-import com.linecorp.armeria.client.retry.RetryStrategy;
-import com.linecorp.armeria.client.retry.RetryingHttpClientBuilder;
+import com.linecorp.armeria.client.retrofit2.ArmeriaRetrofit;
+import com.linecorp.armeria.client.retry.RetryRule;
+import com.linecorp.armeria.client.retry.RetryingClient;
 
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Configuration
@@ -41,23 +38,20 @@ public class RetrofitClientConfiguration {
                 .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-        ClientFactory clientFactory = new ClientFactoryBuilder()
-                .sslContextCustomizer(b -> b.trustManager(InsecureTrustManagerFactory.INSTANCE))
-                .build();
+        final ClientFactory clientFactory = ClientFactory.insecure();
+        final RetryRule retryRule = RetryRule.builder().onUnprocessed()
+                                             .onServerErrorStatus().thenBackoff();
 
-        return new ArmeriaRetrofitBuilder(clientFactory)
-                .baseUrl(baseUrl)
-                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-                .addCallAdapterFactory(Java8CallAdapterFactory.create())
-                .withClientOptions((url, option) -> {
-                    option.decorator(
-                            new RetryingHttpClientBuilder(RetryStrategy.onServerErrorStatus())
-                                    .responseTimeoutMillisForEachAttempt(httpSocketTimeOutMills)
-                                    .maxTotalAttempts(maxRetry)
-                                    .newDecorator());
-                    return option;
-                })
-                .build()
+        return ArmeriaRetrofit.builder(baseUrl)
+                              .factory(clientFactory)
+                              .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                              .decorator(
+                                      RetryingClient.builder(retryRule)
+                                      .responseTimeoutMillisForEachAttempt(httpSocketTimeOutMills)
+                                      .maxTotalAttempts(maxRetry)
+                                      .newDecorator()
+                              )
+                              .build()
                 .create(RetrofitClient.class);
     }
 }
