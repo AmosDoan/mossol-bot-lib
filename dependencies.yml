@@ -1,11 +1,11 @@
 boms:
-  - org.springframework.boot:spring-boot-dependencies:2.1.4.RELEASE
-  - com.linecorp.armeria:armeria-bom:0.83.0
-  - com.linecorp.centraldogma:centraldogma-bom:0.38.0
+  - org.springframework.boot:spring-boot-dependencies:2.4.0
+  - com.linecorp.armeria:armeria-bom:1.2.0
+  - com.linecorp.centraldogma:centraldogma-bom:0.46.0
 
 org.projectlombok:
   lombok: 
-    version: '1.16.16'
+    version: '1.18.16'
 
 me.ramswaroop.jbot:
   jbot:
@@ -17,7 +17,7 @@ javax.websocket:
 
 com.squareup.retrofit2:
   retrofit:
-    version:  &RETROFIT_VERSION '2.4.0'
+    version:  &RETROFIT_VERSION '2.9.0'
   adapter-java8: 
     version: *RETROFIT_VERSION
   converter-jackson: 
@@ -30,4 +30,6 @@ org.wildfly.openssl:
   wildfly-openssl:
     version: '1.0.4.Final'
 
-
+com.google.guava:
+  guava:
+    version: '30.0-jre'

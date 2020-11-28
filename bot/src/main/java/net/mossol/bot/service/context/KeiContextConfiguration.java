@@ -1,4 +1,4 @@
-package net.mossol.bot.context;
+package net.mossol.bot.service.context;
 
 import java.io.IOException;
 import java.util.List;

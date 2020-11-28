@@ -16,3 +16,14 @@ allprojects {
 }
 
 apply from: "${rootDir}/gradle/scripts/build-flags.gradle"
+
+configure(projectsWithFlags('java')) {
+    dependencies {
+        // Testing
+        testCompile 'org.assertj:assertj-core'
+        testCompile 'org.junit.jupiter:junit-jupiter-api'
+        testRuntime 'org.junit.jupiter:junit-jupiter-engine'
+        testRuntime 'org.junit.platform:junit-platform-commons'
+        testRuntime 'org.junit.platform:junit-platform-launcher'
+    }
+}

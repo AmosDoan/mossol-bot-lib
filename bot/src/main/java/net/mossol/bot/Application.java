@@ -9,9 +9,12 @@ import org.springframework.context.annotation.Bean;
 
 import com.linecorp.centraldogma.client.CentralDogma;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Created by Amos.Doan.Mac on 2017. 11. 18..
  */
+@Slf4j
 @SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "net.mossol"})
 public class Application extends SpringBootServletInitializer {
 
@@ -26,8 +29,6 @@ public class Application extends SpringBootServletInitializer {
 
     @Bean
     public CommandLineRunner commandLineRunner(CentralDogma dogma) {
-        return args -> {
-            System.err.println(dogma.listProjects().join());
-        };
+        return args -> log.info(dogma.listProjects().join().toString());
     }
 }
