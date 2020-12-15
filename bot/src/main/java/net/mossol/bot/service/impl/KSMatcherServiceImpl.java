@@ -25,41 +25,41 @@ import com.linecorp.centraldogma.client.Watcher;
 @Order(3)
 public class KSMatcherServiceImpl implements MatcherService {
     private static final Logger logger = LoggerFactory.getLogger(KSMatcherServiceImpl.class);
-    private volatile List<RegexText> KSRegexTextContext;
+    private volatile List<RegexText> kSRegexTextContext;
 
     @Resource
-    private KSServiceHandler KSServiceHandler;
+    private KSServiceHandler kSServiceHandler;
 
     @Resource
-    private Watcher<List<RegexText>> KSRegexTextWatcher;
+    private Watcher<List<RegexText>> kSRegexTextWatcher;
 
     @PostConstruct
     private void init() {
-        KSRegexTextWatcher.watch((revision, context) -> {
+        kSRegexTextWatcher.watch((revision, context) -> {
             if (context == null)  {
                 logger.warn("KSRegexText Watch Failed");
                 return;
             }
-            logger.info("KSRegexText Updated : " + context);
-            KSRegexTextContext = context;
+            logger.info("KSRegexText Updated : {}, rev<{}>", context, revision);
+            kSRegexTextContext = context;
         });
     }
 
     private ReplyMessage regexTextHandle(String message) {
-        for (RegexText regex : KSRegexTextContext) {
+        for (RegexText regex : kSRegexTextContext) {
             List<String> result = regex.match(message);
             if (!CollectionUtils.isEmpty(result)) {
                 logger.debug("Regex Matched : message{}, match{}", message, result);
                 switch (regex.getType()) {
                     case RANDOM_SELECT:
-                        return new ReplyMessage(RANDOM_SELECT, null, KSServiceHandler.getRandomMember(result));
+                        return new ReplyMessage(RANDOM_SELECT, null, kSServiceHandler.getRandomMember(result));
                     case KEI_CS:
-                        return new ReplyMessage(KEI_CS, null, KSServiceHandler.getCSLotto());
+                        return new ReplyMessage(KEI_CS, null, kSServiceHandler.getCSLotto());
                 }
             }
         }
 
-        logger.debug("There is no matched KSregex for the message : " + message);
+        logger.debug("There is no matched KSregex for the message : {}", message);
         return null;
     }
 

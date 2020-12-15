@@ -2,6 +2,7 @@ package net.mossol.bot.service.context;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -9,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import net.mossol.bot.model.RegexText;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,6 +44,17 @@ public class KeiContextConfiguration {
         }
     }
 
+    private List<RegexText> convertToRegexText(JsonNode jsonNode) {
+        try {
+            List<RegexText> regexTexts = objectMapper.readValue(objectMapper.treeAsTokens(jsonNode), new TypeReference<List<RegexText>>(){});
+            regexTexts = regexTexts.stream().map(RegexText::compilePattern).collect(Collectors.toList());
+            return regexTexts;
+        } catch (IOException e) {
+            logger.error("Converting Json to RegexText Map Failed", e);
+            return null;
+        }
+    }
+
     @Bean
     public Watcher<List<String>> keiUnitWatcher() {
         return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
@@ -48,4 +62,10 @@ public class KeiContextConfiguration {
                                         this::convertToList);
     }
 
+    @Bean
+    public Watcher<List<RegexText>> kSRegexTextWatcher() {
+        return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
+                                        Query.ofJsonPath("/KSRegexText.json"),
+                                        this::convertToRegexText);
+    }
 }

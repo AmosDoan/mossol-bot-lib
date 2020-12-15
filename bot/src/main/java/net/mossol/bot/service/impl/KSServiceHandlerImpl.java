@@ -41,7 +41,7 @@ public class KSServiceHandlerImpl implements KSServiceHandler {
                 logger.warn("Kei Member Watch Failed");
                 return;
             }
-            logger.info("Kei Member Updated : " + member);
+            logger.info("Kei Member Updated : {}, rev<{}>", member, revision);
             keiUnitMember = member;
         });
 

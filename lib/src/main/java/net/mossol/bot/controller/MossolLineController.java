@@ -159,22 +159,22 @@ public class MossolLineController {
             logger.debug("Logging : replyMessage {}", request);
             LineRequest.Event event = requestObj.getEvents().get(0);
 
-            if (event.getType().equals("message")) {
+            if ("message".equals(event.getType())) {
                 handleMessage(event);
-            } else if (event.getType().equals("join")) {
+            } else if ("join".equals(event.getType())) {
                 String groupId = event.getSource().getGroupId();
                 logger.debug("Join the group {}", groupId);
             }
 
         } catch (Exception ignore) {
-            logger.debug("Exception occured in replyMessage", ignore);
+            logger.debug("Exception occurred in replyMessage", ignore);
         }
 
         LineResponse response = new LineResponse();
         try {
             response.setResponse(requestObj.getEvents().toString());
         } catch (Exception e) {
-            logger.debug("ERROR : {}", e);
+            logger.debug("Exception occurred in setResponse", e);
         }
 
         HttpResponse httpResponse = HttpResponse.of(HttpStatus.OK, MediaType.JSON_UTF_8,
