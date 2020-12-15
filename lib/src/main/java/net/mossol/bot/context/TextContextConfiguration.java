@@ -1,24 +1,28 @@
 package net.mossol.bot.context;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.linecorp.centraldogma.client.CentralDogma;
-import com.linecorp.centraldogma.client.Watcher;
-import com.linecorp.centraldogma.common.Query;
-import net.mossol.bot.model.RegexText;
-import net.mossol.bot.model.SimpleText;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import net.mossol.bot.model.RegexText;
+import net.mossol.bot.model.SimpleText;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.linecorp.centraldogma.client.CentralDogma;
+import com.linecorp.centraldogma.client.Watcher;
+import com.linecorp.centraldogma.common.Query;
 
 @Configuration
 public class TextContextConfiguration {
@@ -68,10 +72,4 @@ public class TextContextConfiguration {
                                         this::convertToRegexText);
     }
 
-    @Bean
-    public Watcher<List<RegexText>> KSRegexTextWatcher() {
-        return centralDogma.fileWatcher(CENTRAL_DOGMA_PROJECT, CENTRAL_DOGMA_REPOSITORY,
-                                        Query.ofJsonPath("/KSRegexText.json"),
-                                        this::convertToRegexText);
-    }
 }
