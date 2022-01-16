@@ -1,10 +1,11 @@
 package net.mossol.bot.controller;
 
+import java.util.Base64;
+
 import javax.annotation.Resource;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -97,7 +98,7 @@ public class MossolLineController {
             SecretKeySpec secret_key = new SecretKeySpec(SECRET_KEY.getBytes(), "HmacSHA256");
             sha256_HMAC.init(secret_key);
 
-            String hash = Base64.encodeBase64String(sha256_HMAC.doFinal(requestBody.getBytes()));
+            String hash = Base64.getEncoder().encodeToString(sha256_HMAC.doFinal(requestBody.getBytes()));
             if (signature.equals(hash)) {
                 logger.debug("PASS: Hash Result {}, Signature {} Secret {}", hash, signature, SECRET_KEY);
                 return true;

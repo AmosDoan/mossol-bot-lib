@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ConditionalOnProperty(
-        value = "service.enabled.slack",
+        value = "slack.enable",
         havingValue = "true",
         matchIfMissing = true
 )
@@ -31,11 +31,9 @@ public class SlackBotConfiguration {
     public AsyncMethodsClient slackClient(SlackBotSettings slackBotSettings) {
         final AppConfig appConfig = AppConfig.builder()
                                              .singleTeamBotToken(slackBotSettings.getToken())
-                                             .signingSecret(slackBotSettings.getSigningSecret())
                                              .build();
 
-        log.debug("initialize slack app token <{}>; secret <{}>", slackBotSettings.getToken(),
-                  slackBotSettings.getSigningSecret());
+        log.debug("initialize slack app token <{}>;", slackBotSettings.getToken());
 
         return new App(appConfig).slack().methodsAsync(appConfig.getSingleTeamBotToken());
     }

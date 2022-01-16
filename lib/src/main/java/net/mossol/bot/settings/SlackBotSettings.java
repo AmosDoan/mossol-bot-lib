@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @ConfigurationProperties(prefix = "slack")
 public class SlackBotSettings {
+    boolean enable;
     String token;
-    String signingSecret;
 }

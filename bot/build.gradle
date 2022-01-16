@@ -14,7 +14,6 @@ dependencies {
     implementation group: 'com.linecorp.centraldogma', name: 'centraldogma-client-spring-boot-starter'
 
     // Slack Bot
-    implementation group: 'me.ramswaroop.jbot', name: 'jbot'
     implementation(group: 'javax.websocket', name: 'javax.websocket-api')
 
     // Lombok

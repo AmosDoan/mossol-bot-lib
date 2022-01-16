@@ -7,10 +7,6 @@ org.projectlombok:
   lombok: 
     version: '1.18.16'
 
-me.ramswaroop.jbot:
-  jbot:
-    version: '4.1.0'
-
 com.slack.api:
   bolt:
     version: '1.16.0'
