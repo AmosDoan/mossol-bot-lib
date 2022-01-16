@@ -10,9 +10,9 @@ server:
   port: 8181
 
 # slack integration
-rtmUrl: https://slack.com/api/rtm.start?token={token}&simple_latest&no_unreads
-slackBotToken: <defined as environment variable in the production machine>
-slackApi: https://slack.com/api
+slack:
+  enable: true
+  token: <defined as environment variable in the production machine>
 
 # line integration
 line:
@@ -32,4 +32,3 @@ retrofit:
 service:
   enabled:
     line: true
-    slack: true
