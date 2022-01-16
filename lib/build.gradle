@@ -24,7 +24,9 @@ dependencies {
 
     // Slack Bot
     compile group: 'me.ramswaroop.jbot', name: 'jbot'
-    compile(group: 'javax.websocket', name: 'javax.websocket-api')
+    compile group: 'com.slack.api', name: 'bolt'
+    compile group: 'javax.websocket', name: 'javax.websocket-api'
+    runtimeOnly group: 'org.glassfish.tyrus.bundles', name: 'tyrus-standalone-client'
 
     // Retrofit
     compile group: 'com.squareup.retrofit2', name: 'retrofit'

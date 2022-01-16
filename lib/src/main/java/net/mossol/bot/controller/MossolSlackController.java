@@ -25,7 +25,6 @@ import me.ramswaroop.jbot.core.slack.models.Message;
         value = "service.enabled.slack",
         havingValue = "true",
         matchIfMissing = true
-
 )
 public class MossolSlackController extends ReconnectableBot {
 

@@ -11,6 +11,14 @@ me.ramswaroop.jbot:
   jbot:
     version: '4.1.0'
 
+com.slack.api:
+  bolt:
+    version: '1.16.0'
+
+org.glassfish.tyrus.bundles:
+  tyrus-standalone-client:
+    version: '1.17'
+
 javax.websocket:
   javax.websocket-api:
     version: '1.1'
